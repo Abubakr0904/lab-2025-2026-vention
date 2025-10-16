@@ -40,6 +40,7 @@ body { background: #1a1a1a; position: relative; }
 .table th { background: #003d99; color: white; font-weight: 600; }
 .table tr:nth-child(even) { background: #f9f9f9; }
 .controls { position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%); background: rgba(0, 61, 153, 0.15); backdrop-filter: blur(10px); padding: 1vh 2vw; border-radius: 50px; display: flex; align-items: center; gap: 2vw; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.jump-controls { position: fixed; bottom: 3vh; right: 3vw; background: rgba(0, 61, 153, 0.15); backdrop-filter: blur(10px); padding: 1vh 1.5vw; border-radius: 50px; display: flex; align-items: center; gap: 0.5vw; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
 button { background: rgba(255,255,255,0.9); color: #003d99; border: none; padding: 0.8vh 1.5vw; font-size: clamp(11px, 1.5vh, 16px); border-radius: 25px; cursor: pointer; transition: all 0.3s; font-weight: 600; }
 button:hover:not(:disabled) { background: white; transform: scale(1.05); box-shadow: 0 2px 10px rgba(0,61,153,0.3); }
 button:disabled { opacity: 0.3; cursor: not-allowed; }
@@ -1623,11 +1624,14 @@ Parallel.ForEach(items, item =>
 <div class="controls">
     <button id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
     <span class="slide-counter">Slide <span id="currentSlide">1</span></span>
-    <input type="number" id="slideInput" min="1" max="50" placeholder="Go to..." 
-           style="width: 70px; padding: 0.8vh 0.8vw; border: none; border-radius: 20px; text-align: center; font-size: clamp(11px, 1.5vh, 15px); margin: 0 1vw;"
-           onkeypress="if(event.key==='Enter') goToSlide()">
-    <button onclick="goToSlide()" style="padding: 0.8vh 1.2vw;">Go</button>
     <button id="nextBtn" onclick="changeSlide(1)">Next →</button>
+</div>
+
+<div class="jump-controls">
+    <input type="number" id="slideInput" min="1" max="50" placeholder="Go to..." 
+           style="width: 70px; padding: 0.8vh 0.8vw; border: none; border-radius: 20px; text-align: center; font-size: clamp(11px, 1.5vh, 15px);"
+           onkeypress="if(event.key==='Enter') goToSlide()">
+    <button onclick="goToSlide()" style="padding: 0.8vh 1.2vw; margin-left: 0.5vw;">Go</button>
 </div>
 
 <script>
