@@ -23,8 +23,8 @@ Comprehensive training materials for mastering C# Async/Await and Concurrency co
 ## 📁 Files
 
 - **`index.html`** - Main presentation file (GitHub Pages entry point)
-- **`Vention_Lab_2025-2026_CSharp_Async_Training.html`** - Original training file (same as index.html)
-- **`Lesson Plan.md`** - Original lesson plan and structure
+- **`Assignment_LegacySyncCode.cs`** - Practice assignment: Legacy synchronous code to convert to async
+- **`README.md`** - This file
 
 ## 🎯 Topics Covered
 
@@ -83,8 +83,34 @@ Then open: `http://localhost:8000`
 
 - **→ Arrow** or **Right Arrow Key**: Next slide
 - **← Arrow** or **Left Arrow Key**: Previous slide
+- **Jump to Slide**: Enter slide number in the input box and press Enter or click "Go"
 - **Mouse Click**: Click navigation arrows at the bottom center
 - **Keyboard Shortcuts**: Use arrow keys for quick navigation
+
+## 📝 Practice Assignment
+
+The repository includes **`Assignment_LegacySyncCode.cs`** - a comprehensive example of legacy synchronous code that needs to be converted to async/await.
+
+### What's Included:
+- ❌ **Legacy Synchronous Code**: A complete `LegacyUserService` class with 9 common problems
+- ✅ **Your Task**: Convert it to `AsyncUserService` using best practices
+- 💡 **Detailed Comments**: Each problem is explained with hints
+- 🎯 **Learning Objectives**: Apply all the concepts from the training
+
+### Problems to Fix:
+1. Blocking HTTP calls (using `.Result`)
+2. Sequential I/O (no parallelism)
+3. Blocking file I/O
+4. No cancellation support
+5. CPU-bound work on calling thread
+6. No concurrency control
+7. Missing error handling patterns
+
+### Bonus Challenges:
+- Implement retry logic
+- Add `IAsyncEnumerable<T>` for streaming
+- Implement circuit breaker pattern
+- Add progress reporting
 
 ## 🌐 Deploy to GitHub Pages
 
