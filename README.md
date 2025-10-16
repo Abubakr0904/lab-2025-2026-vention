@@ -201,7 +201,7 @@ Training materials created for Vention Lab 2025-2026.
 
 ---
 
-**Lecturer:** Abubakr Bakhromov  
+**Instructor:** Abubakr Bakhromov  
 **Organization:** Vention Lab  
 **Year:** 2025-2026  
 **Target Audience:** Junior to Mid-Level .NET Developers  

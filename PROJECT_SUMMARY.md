@@ -217,7 +217,7 @@ Everything is set up and ready. Choose your deployment method:
 
 **Good luck with your deployment! 🚀**
 
-*Lecturer: Abubakr Bakhromov*  
+*Instructor: Abubakr Bakhromov*  
 *Prepared by: Vention Lab 2025-2026*  
 *Last Updated: October 16, 2025*
 
