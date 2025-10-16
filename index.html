@@ -592,7 +592,7 @@ Parallel.For(<span class="code-number">0</span>, <span class="code-number">1000<
             <h3>The Problem ValueTask Solves</h3>
             <p>Every <code>Task&lt;T&gt;</code> is a heap-allocated object. For methods that complete synchronously (cached data), this allocation is wasteful.</p>
             
-            <h3 style="margin-top": 1.5vh;">ValueTask&lt;T&gt;: A Struct Alternative</h3>
+            <h3 style="margin-top: 1.5vh;">ValueTask&lt;T&gt;: A Struct Alternative</h3>
             <p><code>ValueTask&lt;T&gt;</code> is a struct (value type). If the result is immediately available, no heap allocation occurs.</p>
             
             <div class="code-block" style="margin-top: 2vh;"><span class="code-keyword">private</span> <span class="code-type">Dictionary</span>&lt;<span class="code-keyword">int</span>, <span class="code-type">User</span>&gt; _cache = <span class="code-keyword">new</span>();
