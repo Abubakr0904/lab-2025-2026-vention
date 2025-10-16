@@ -201,7 +201,8 @@ Training materials created for Vention Lab 2025-2026.
 
 ---
 
-**Prepared by:** Vention Lab  
+**Lecturer:** Abubakr Bakhromov  
+**Organization:** Vention Lab  
 **Year:** 2025-2026  
 **Target Audience:** Junior to Mid-Level .NET Developers  
 **Duration:** ~90 minutes
