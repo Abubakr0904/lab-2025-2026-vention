@@ -641,20 +641,28 @@ Parallel.For(<span class="code-number">0</span>, <span class="code-number">1000<
             <h2>ExecutionContext</h2>
             
             <h3>What Is It?</h3>
-            <p>Contextual data that <strong>automatically flows</strong> across async operations.</p>
+            <p>Contextual data that <strong>automatically flows</strong> across async operations. Unlike SynchronizationContext (which is platform-specific), ExecutionContext flows in <strong>all</strong> .NET applications.</p>
             
             <h3 style="margin-top: 1.5vh;">What Flows in ExecutionContext?</h3>
-            <p>• <code>Thread.CurrentCulture</code> and <code>Thread.CurrentUICulture</code></p>
-            <p>• <code>AsyncLocal&lt;T&gt;</code> values</p>
-            <p>• Security principal/identity</p>
-            <p>• Other ambient data</p>
+            
+            <p style="margin-top: 1vh;"><strong>1. Thread.CurrentCulture and Thread.CurrentUICulture</strong></p>
+            <p style="margin-left: 2vw;">Culture settings for formatting dates, numbers, and UI text. Ensures your async code respects user's locale settings even when resuming on different threads.</p>
+            
+            <p style="margin-top: 1vh;"><strong>2. AsyncLocal&lt;T&gt; values</strong></p>
+            <p style="margin-left: 2vw;">Thread-local storage that flows across async boundaries. Used for correlation IDs, request context, logging context, etc. Each async flow gets its own isolated copy.</p>
+            
+            <p style="margin-top: 1vh;"><strong>3. Security principal/identity</strong></p>
+            <p style="margin-left: 2vw;">The current user's identity (<code>Thread.CurrentPrincipal</code>). Critical for authorization checks in async code - the user context is preserved across awaits.</p>
+            
+            <p style="margin-top: 1vh;"><strong>4. Other ambient data</strong></p>
+            <p style="margin-left: 2vw;">Impersonation context, host execution context, and other framework-specific data that needs to flow with async operations.</p>
             
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>ℹ️ Key Point:</strong> ExecutionContext is separate from SynchronizationContext. ExecutionContext flows automatically; you rarely need to think about it.
+                <strong>ℹ️ Key Point:</strong> ExecutionContext is separate from SynchronizationContext. ExecutionContext flows automatically in <strong>all</strong> apps (console, web, UI); you rarely need to think about it.
             </div>
             
             <div class="hint" style="margin-top: 2vh;">
-                <strong>💡 Guarantee:</strong> Things like <code>Thread.CurrentCulture</code> are preserved across awaits, even when resuming on a different thread.
+                <strong>💡 Guarantee:</strong> These values are preserved across awaits, even when resuming on a different thread. The .NET runtime handles this automatically.
             </div>
         
         </div>
@@ -671,6 +679,7 @@ Parallel.For(<span class="code-number">0</span>, <span class="code-number">1000<
             <p>• UI apps (WPF, WinForms): Have UI SynchronizationContext (must resume on UI thread)</p>
             <p>• Classic ASP.NET: Has AspNetSynchronizationContext (per-request context)</p>
             <p>• ASP.NET Core: No SynchronizationContext (null)</p>
+            <p>• Console apps: No SynchronizationContext (null)</p>
             
             <h3 style="margin-top: 1.5vh;">How ConfigureAwait(false) Works</h3>
             <div class="code-block"><span class="code-comment">// Default behavior</span>
