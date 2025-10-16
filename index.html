@@ -1623,6 +1623,10 @@ Parallel.ForEach(items, item =>
 <div class="controls">
     <button id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
     <span class="slide-counter">Slide <span id="currentSlide">1</span></span>
+    <input type="number" id="slideInput" min="1" max="50" placeholder="Go to..." 
+           style="width: 70px; padding: 0.8vh 0.8vw; border: none; border-radius: 20px; text-align: center; font-size: clamp(11px, 1.5vh, 15px); margin: 0 1vw;"
+           onkeypress="if(event.key==='Enter') goToSlide()">
+    <button onclick="goToSlide()" style="padding: 0.8vh 1.2vw;">Go</button>
     <button id="nextBtn" onclick="changeSlide(1)">Next →</button>
 </div>
 
@@ -1646,6 +1650,19 @@ function showSlide(n) {
 function changeSlide(n) {
     currentSlide += n;
     showSlide(currentSlide);
+}
+
+function goToSlide() {
+    const input = document.getElementById('slideInput');
+    const slideNum = parseInt(input.value);
+    
+    if (slideNum >= 1 && slideNum <= totalSlides) {
+        currentSlide = slideNum;
+        showSlide(currentSlide);
+        input.value = '';
+    } else {
+        alert(`Please enter a slide number between 1 and ${totalSlides}`);
+    }
 }
 
 document.addEventListener('keydown', (e) => {
