@@ -1,235 +1,192 @@
-# Vention Lab 2025-2026: C# Async/Await Training
+# Vention Lab 2025-2026: .NET Advanced Training
 
-![Training Status](https://img.shields.io/badge/Status-Active-brightgreen)
-![Slides](https://img.shields.io/badge/Slides-50-blue)
-![Duration](https://img.shields.io/badge/Duration-90min-orange)
+🎓 **Comprehensive .NET training presentations covering advanced topics for professional development**
 
-## 📚 About This Training
+## 📚 Presentations
 
-Comprehensive training materials for mastering C# Async/Await and Concurrency concepts. This 50-slide presentation covers everything from thread starvation problems to advanced async patterns, designed for junior to mid-level developers.
+### 1. C# Async/Await & Concurrency Training
+**50 slides | ~90 minutes | Junior to Mid-Level**
 
-### Key Learning Objectives:
-- ✅ Understanding the thread starvation problem
-- ✅ Mastering async/await syntax and state machines
-- ✅ Avoiding deadlocks and common pitfalls
-- ✅ Best practices for scalable applications
+Master asynchronous programming patterns that enable scalable, high-performance applications.
 
-## 🚀 Live Demo
+**Topics Covered:**
+- The Thread Starvation Problem
+- Non-Blocking I/O & IOCP
+- async/await Syntax & State Machines
+- Deadlock Prevention (SynchronizationContext, ConfigureAwait)
+- Task.WhenAll, Task.WhenAny, CancellationToken
+- Best Practices for ASP.NET Core
 
-**View the presentation online:** [GitHub Pages Link](https://YOUR-USERNAME.github.io/lab/)
+**[📖 View Presentation](https://abubakr0904.github.io/lab-2025-2026-vention/async-await.html)**
 
-> Replace `YOUR-USERNAME` with your actual GitHub username after deployment
-
-## 📁 Files
-
-- **`index.html`** - Main presentation file (GitHub Pages entry point)
-- **`Assignment_LegacySyncCode.cs`** - Practice assignment: Legacy synchronous code to convert to async
-- **`README.md`** - This file
-
-## 🎯 Topics Covered
-
-1. **Foundation & Context** (Slides 1-8)
-   - Thread Starvation Problem
-   - ThreadPool & Context Switching
-   - I/O-Bound vs CPU-Bound Operations
-   - Non-Blocking I/O (IOCP)
-
-2. **Async/Await Fundamentals** (Slides 9-20)
-   - Core Syntax & Keywords
-   - Task Return Types
-   - State Machine Mechanics
-   - ConfigureAwait(false)
-
-3. **Pitfalls & Best Practices** (Slides 21-35)
-   - Deadlock Prevention
-   - Exception Handling
-   - CancellationToken Usage
-   - async void Anti-patterns
-
-4. **Concurrency & Parallelism** (Slides 36-42)
-   - Task.WhenAll / WhenAny
-   - Task.Run for CPU-bound work
-   - Parallel.For & Parallel.ForEach
-   - SemaphoreSlim
-
-5. **Advanced Topics** (Slides 43-50)
-   - IAsyncEnumerable<T>
-   - Testing Async Code
-   - Migration Strategies
-   - Best Practices Summary
-
-## 🔧 Local Usage
-
-### Option 1: Direct File Opening
-Simply open `index.html` or `Vention_Lab_2025-2026_CSharp_Async_Training.html` in any modern web browser.
-
-### Option 2: Local Web Server
-For best experience, serve via a local web server:
-
-```bash
-# Using Python 3
-python -m http.server 8000
-
-# Using Node.js (http-server)
-npx http-server -p 8000
-
-# Using PHP
-php -S localhost:8000
-```
-
-Then open: `http://localhost:8000`
-
-## 📖 Navigation Controls
-
-- **→ Arrow** or **Right Arrow Key**: Next slide
-- **← Arrow** or **Left Arrow Key**: Previous slide
-- **Jump to Slide**: Enter slide number in the input box and press Enter or click "Go"
-- **Mouse Click**: Click navigation arrows at the bottom center
-- **Keyboard Shortcuts**: Use arrow keys for quick navigation
-
-## 📝 Practice Assignment
-
-The repository includes **`Assignment_LegacySyncCode.cs`** - a comprehensive example of legacy synchronous code that needs to be converted to async/await.
-
-### What's Included:
-- ❌ **Legacy Synchronous Code**: A complete `LegacyUserService` class with 9 common problems
-- ✅ **Your Task**: Convert it to `AsyncUserService` using best practices
-- 💡 **Detailed Comments**: Each problem is explained with hints
-- 🎯 **Learning Objectives**: Apply all the concepts from the training
-
-### Problems to Fix:
-1. Blocking HTTP calls (using `.Result`)
-2. Sequential I/O (no parallelism)
-3. Blocking file I/O
-4. No cancellation support
-5. CPU-bound work on calling thread
-6. No concurrency control
-7. Missing error handling patterns
-
-### Bonus Challenges:
-- Implement retry logic
-- Add `IAsyncEnumerable<T>` for streaming
-- Implement circuit breaker pattern
-- Add progress reporting
-
-## 🌐 Deploy to GitHub Pages
-
-Follow these steps to deploy your own copy:
-
-### Method 1: GitHub Web Interface (Easiest)
-
-1. **Create a new repository** on GitHub:
-   - Go to https://github.com/new
-   - Name it `lab` (or any name you prefer)
-   - Choose "Public" (required for free GitHub Pages)
-   - Click "Create repository"
-
-2. **Upload files**:
-   - Click "uploading an existing file"
-   - Drag and drop these files:
-     - `index.html`
-     - `.nojekyll`
-     - `README.md`
-     - `Lesson Plan.md` (optional)
-   - Click "Commit changes"
-
-3. **Enable GitHub Pages**:
-   - Go to repository **Settings** → **Pages**
-   - Under "Source", select **Deploy from a branch**
-   - Select branch: **main** (or **master**)
-   - Select folder: **/ (root)**
-   - Click **Save**
-
-4. **Access your site**:
-   - Wait 1-2 minutes for deployment
-   - Visit: `https://YOUR-USERNAME.github.io/lab/`
-   - 🎉 Your presentation is live!
-
-### Method 2: Git Command Line
-
-```bash
-# Navigate to your project directory
-cd C:\BobhaulRepos\lab
-
-# Initialize git repository (if not already initialized)
-git init
-
-# Add all files
-git add .
-
-# Commit files
-git commit -m "Add C# Async/Await training presentation"
-
-# Add remote repository (replace YOUR-USERNAME)
-git remote add origin https://github.com/YOUR-USERNAME/lab.git
-
-# Push to GitHub
-git branch -M main
-git push -u origin main
-
-# Now enable GitHub Pages via Settings → Pages as described above
-```
-
-### Method 3: GitHub Desktop
-
-1. Open GitHub Desktop
-2. Click "Add" → "Add Existing Repository"
-3. Choose `C:\BobhaulRepos\lab`
-4. Click "Publish repository"
-5. Enable GitHub Pages via Settings → Pages (see Method 1, step 3)
-
-## 🔄 Updating the Presentation
-
-After making changes to your presentation:
-
-```bash
-# Add changes
-git add .
-
-# Commit with a message
-git commit -m "Update presentation content"
-
-# Push to GitHub
-git push origin main
-```
-
-GitHub Pages will automatically rebuild (takes 1-2 minutes).
-
-## ✨ Features
-
-- 📱 **Responsive Design**: Works on desktop, tablet, and mobile
-- ⌨️ **Keyboard Navigation**: Arrow keys for quick navigation
-- 🎨 **Modern UI**: Clean, professional design with syntax highlighting
-- 📖 **Code Examples**: Real-world C# code with explanations
-- 🔗 **References**: Direct links to Microsoft Docs
-- 💡 **Best Practices**: Highlighted tips and warnings throughout
-
-## 📚 Additional Resources
-
-- [Microsoft Docs - Async Programming](https://docs.microsoft.com/dotnet/csharp/async)
-- [Task-based Asynchronous Pattern (TAP)](https://docs.microsoft.com/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap)
-- [ASP.NET Core Performance Best Practices](https://docs.microsoft.com/aspnet/core/performance/performance-best-practices)
-- [Stephen Cleary's Blog](https://blog.stephencleary.com/)
-- [Stephen Toub's .NET Blog](https://devblogs.microsoft.com/dotnet/author/toub/)
-
-## 🤝 Contributing
-
-This training material is maintained by Vention Lab. For suggestions or improvements:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📄 License
-
-Training materials created for Vention Lab 2025-2026.
+**Assignment:**
+- Convert legacy sync code to async: [Assignment_LegacySyncCode.cs](./Assignment_LegacySyncCode.cs)
 
 ---
 
-**Instructor:** Abubakr Bakhromov  
-**Organization:** Vention Lab  
-**Year:** 2025-2026  
-**Target Audience:** Junior to Mid-Level .NET Developers  
-**Duration:** ~90 minutes
+### 2. .NET Best Practices Training
+**100 slides | ~120 minutes | Junior to Mid-Level**
 
+Professional patterns for building production-ready, maintainable systems.
+
+**Four Pillars:**
+
+1. **Logging & Observability**
+   - Structured logging with Serilog
+   - Log levels and contexts
+   - Centralized logging & correlation IDs
+   - Performance optimization
+
+2. **Configuration Management**
+   - appsettings.json & environment overrides
+   - Strongly-typed configuration (IOptions)
+   - Secret management (User Secrets, Azure Key Vault)
+   - Multi-environment strategies
+
+3. **Error Handling**
+   - Custom exceptions & global handlers
+   - Retry patterns with Polly
+   - Result wrappers vs exceptions
+   - Graceful degradation
+
+4. **Documentation**
+   - Documentation as code
+   - ADRs (Architecture Decision Records)
+   - API documentation (Swagger/OpenAPI)
+   - CI/CD integration for docs
+
+**[📖 View Presentation](https://abubakr0904.github.io/lab-2025-2026-vention/best-practices.html)**
+
+---
+
+## 🚀 Quick Start
+
+### Online (GitHub Pages)
+Visit the live site: **https://abubakr0904.github.io/lab-2025-2026-vention/**
+
+### Local Development
+1. Clone the repository
+   ```bash
+   git clone https://github.com/Abubakr0904/lab-2025-2026-vention.git
+   cd lab-2025-2026-vention
+   ```
+
+2. Open `index.html` in your browser
+   ```bash
+   # Windows
+   start index.html
+   
+   # macOS
+   open index.html
+   
+   # Linux
+   xdg-open index.html
+   ```
+
+### Navigation Features
+- **Arrow Keys:** Navigate slides (← →)
+- **Jump to Slide:** Enter slide number in bottom-right input
+- **Main Controls:** Previous/Next buttons at bottom center
+
+---
+
+## 📂 Repository Structure
+
+```
+lab-2025-2026-vention/
+├── index.html                      # Landing page with presentation selection
+├── async-await.html                # 50-slide Async/Await presentation
+├── best-practices.html             # 100-slide Best Practices presentation
+├── styles.css                      # Shared presentation styles
+├── presentation.js                 # Shared navigation logic
+├── Assignment_LegacySyncCode.cs    # Async conversion assignment
+├── README.md                       # This file
+├── .gitignore                      # Git ignore rules
+├── .nojekyll                       # GitHub Pages configuration
+└── .github/
+    └── workflows/
+        └── deploy.yml              # GitHub Actions deployment
+```
+
+---
+
+## 🎯 Learning Objectives
+
+### After completing these trainings, you will be able to:
+
+**Async/Await:**
+- ✅ Explain why async prevents thread starvation
+- ✅ Identify I/O-bound vs CPU-bound operations
+- ✅ Avoid common pitfalls (deadlocks, fire-and-forget)
+- ✅ Apply best practices in ASP.NET Core and UI applications
+
+**Best Practices:**
+- ✅ Implement structured logging with proper context
+- ✅ Manage configuration securely across environments
+- ✅ Build resilient error handling strategies
+- ✅ Create and maintain production-quality documentation
+
+---
+
+## 👨‍🏫 Instructor
+
+**Abubakr Bakhromov**
+- Software Engineer at Vention
+- .NET Developer & Technical Trainer
+
+---
+
+## 📖 Resources
+
+### Official Documentation
+- [Microsoft Docs - Async Programming](https://docs.microsoft.com/dotnet/csharp/async)
+- [ASP.NET Core Performance Best Practices](https://docs.microsoft.com/aspnet/core/performance/performance-best-practices)
+- [.NET Logging](https://docs.microsoft.com/dotnet/core/extensions/logging)
+- [Configuration in ASP.NET Core](https://docs.microsoft.com/aspnet/core/fundamentals/configuration/)
+
+### Community Resources
+- [Stephen Cleary's Blog](https://blog.stephencleary.com) - Async/Await expert
+- [ConfigureAwait FAQ](https://devblogs.microsoft.com/dotnet/configureawait-faq/) - Stephen Toub
+- [Serilog](https://serilog.net/) - Structured logging framework
+
+---
+
+## 🤝 Contributing
+
+Found a typo or have a suggestion? Contributions are welcome!
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/improvement`)
+3. Commit your changes (`git commit -m 'Add improvement'`)
+4. Push to the branch (`git push origin feature/improvement`)
+5. Open a Pull Request
+
+---
+
+## 📜 License
+
+This project is created for educational purposes as part of Vention's internal training program.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Microsoft Docs** - Comprehensive .NET documentation
+- **Stephen Cleary & Stephen Toub** - Async/await expertise
+- **Vention Team** - Support and feedback
+- **AI Assistant** - Content generation and structuring
+
+---
+
+## 📧 Contact
+
+For questions or feedback:
+- **GitHub Issues:** [Create an issue](https://github.com/Abubakr0904/lab-2025-2026-vention/issues)
+- **Instructor:** Abubakr Bakhromov
+
+---
+
+<p align="center">
+  <sub>🤖 Made by AI • Reviewed by Abubakr Bakhromov</sub><br>
+  <sub>© 2025 Vention Lab Training Program</sub>
+</p>

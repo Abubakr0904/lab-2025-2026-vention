@@ -3,1678 +3,247 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>C# Async/Await Training - Vention Lab</title>
+<title>Vention Lab 2025-2026 - .NET Training</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-body { background: #1a1a1a; position: relative; }
-.slide-container { width: 100vw; height: 100vh; position: relative; }
-.slide { display: none; width: 100%; height: 100%; padding: 4vh 5vw; background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%); overflow-y: auto; }
-.slide.active { display: flex; flex-direction: column; }
-.slide h1 { font-size: clamp(28px, 4vh, 48px); color: #003d99; margin-bottom: 2vh; font-weight: 700; }
-.slide h2 { font-size: clamp(24px, 3.5vh, 42px); color: #003d99; margin-bottom: 1.5vh; font-weight: 700; }
-.slide h3 { font-size: clamp(16px, 2.2vh, 26px); color: #0056b3; margin-top: 1.5vh; margin-bottom: 1vh; font-weight: 600; }
-.slide p, .slide li { font-size: clamp(13px, 1.8vh, 19px); color: #333; line-height: 1.5; margin: 0.5vh 0; }
-.slide ul, .slide ol { margin-left: 2vw; }
-.slide a { color: #0056b3; text-decoration: none; border-bottom: 1px dotted #0056b3; }
-.slide a:hover { color: #003d99; border-bottom-style: solid; }
-.reference { font-size: clamp(10px, 1.4vh, 14px); color: #666; font-style: italic; margin-top: 1.5vh; }
-.reference a { color: #0056b3; border-bottom: none; }
-.why-section { background: #e8f4f8; border-left: 4px solid #17a2b8; padding: 1vh 1.3vw; margin: 1vh 0; border-radius: 4px; }
-.code-block { background: #1e1e1e; color: #d4d4d4; padding: 1.5vh 1.5vw; border-radius: 6px; font-family: 'Consolas', monospace; font-size: clamp(11px, 1.5vh, 15px); margin: 1vh 0; overflow-x: auto; line-height: 1.4; border-left: 4px solid #007acc; white-space: pre; }
-.code-keyword { color: #569cd6; }
-.code-type { color: #4ec9b0; }
-.code-string { color: #ce9178; }
-.code-comment { color: #6a9955; }
-.code-method { color: #dcdcaa; }
-.code-number { color: #b5cea8; }
-.hint { background: #fff3cd; border-left: 4px solid #ff9800; padding: 1vh 1.5vw; margin: 1vh 0; border-radius: 4px; font-size: clamp(12px, 1.6vh, 17px); color: #856404; line-height: 1.4; }
-.warning { background: #f8d7da; border-left: 4px solid #dc3545; padding: 1vh 1.5vw; margin: 1vh 0; border-radius: 4px; font-size: clamp(12px, 1.6vh, 17px); color: #721c24; line-height: 1.4; }
-.info-box { background: #d1ecf1; border-left: 4px solid #0c5460; padding: 1vh 1.5vw; margin: 1vh 0; border-radius: 4px; font-size: clamp(12px, 1.6vh, 17px); color: #0c5460; line-height: 1.4; }
-.title-slide { background: linear-gradient(135deg, #003d99 0%, #0056b3 100%); color: white; justify-content: center; align-items: center; text-align: center; }
-.title-slide h1 { color: white; font-size: clamp(32px, 5vh, 56px); margin-bottom: 2vh; }
-.title-slide h2 { color: #e0e0e0; font-size: clamp(20px, 3vh, 36px); margin-bottom: 2vh; }
-.title-slide p { color: #e0e0e0; font-size: clamp(14px, 2vh, 22px); margin: 1vh 0; }
-.table { width: 100%; border-collapse: collapse; margin: 1vh 0; font-size: clamp(12px, 1.6vh, 17px); }
-.table th, .table td { border: 1px solid #ddd; padding: 1vh 1vw; text-align: left; }
-.table th { background: #003d99; color: white; font-weight: 600; }
-.table tr:nth-child(even) { background: #f9f9f9; }
-.controls { position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%); background: rgba(0, 61, 153, 0.15); backdrop-filter: blur(10px); padding: 1vh 2vw; border-radius: 50px; display: flex; align-items: center; gap: 2vw; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-.jump-controls { position: fixed; bottom: 3vh; right: 3vw; background: rgba(0, 61, 153, 0.15); backdrop-filter: blur(10px); padding: 1vh 1.5vw; border-radius: 50px; display: flex; align-items: center; gap: 0.5vw; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-button { background: rgba(255,255,255,0.9); color: #003d99; border: none; padding: 0.8vh 1.5vw; font-size: clamp(11px, 1.5vh, 16px); border-radius: 25px; cursor: pointer; transition: all 0.3s; font-weight: 600; }
-button:hover:not(:disabled) { background: white; transform: scale(1.05); box-shadow: 0 2px 10px rgba(0,61,153,0.3); }
-button:disabled { opacity: 0.3; cursor: not-allowed; }
-.slide-counter { font-size: clamp(11px, 1.5vh, 16px); font-weight: 600; color: rgba(0, 61, 153, 0.9); background: rgba(255,255,255,0.9); padding: 0.8vh 1.5vw; border-radius: 25px; }
-.content { flex: 1; overflow-y: auto; }
-.content::-webkit-scrollbar { width: 8px; }
-.content::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
-.content::-webkit-scrollbar-thumb { background: rgba(0, 61, 153, 0.3); border-radius: 10px; }
-.content::-webkit-scrollbar-thumb:hover { background: rgba(0, 61, 153, 0.5); }
+html, body { width: 100%; height: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { 
+    background: linear-gradient(135deg, #003d99 0%, #0056b3 50%, #007acc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.container {
+    text-align: center;
+    max-width: 1200px;
+    padding: 4vh 5vw;
+}
+
+h1 {
+    font-size: clamp(32px, 5vh, 64px);
+    margin-bottom: 2vh;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.subtitle {
+    font-size: clamp(18px, 2.5vh, 32px);
+    margin-bottom: 5vh;
+    color: #e0e0e0;
+    font-weight: 300;
+}
+
+.presentations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 4vh;
+    margin-top: 5vh;
+}
+
+.presentation-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 4vh 3vw;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.presentation-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.presentation-card h2 {
+    font-size: clamp(24px, 3vh, 36px);
+    margin-bottom: 2vh;
+    color: #fff;
+}
+
+.presentation-card p {
+    font-size: clamp(14px, 1.8vh, 20px);
+    line-height: 1.6;
+    color: #e0e0e0;
+    margin-bottom: 3vh;
+}
+
+.meta {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 3vh;
+    font-size: clamp(12px, 1.6vh, 16px);
+    color: #b0d4ff;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.meta-label {
+    font-size: clamp(10px, 1.4vh, 14px);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5vh;
+    opacity: 0.7;
+}
+
+.meta-value {
+    font-weight: 600;
+    font-size: clamp(16px, 2vh, 22px);
+}
+
+.btn {
+    display: inline-block;
+    background: white;
+    color: #003d99;
+    padding: 1.5vh 4vw;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: clamp(14px, 1.8vh, 20px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+    background: #f0f0f0;
+}
+
+.topics {
+    text-align: left;
+    margin-top: 2vh;
+    font-size: clamp(13px, 1.7vh, 18px);
+}
+
+.topics ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.topics li {
+    padding: 0.5vh 0;
+    padding-left: 1.5vw;
+}
+
+.topics li:before {
+    content: "✓ ";
+    color: #4caf50;
+    font-weight: bold;
+    margin-right: 0.5vw;
+}
+
+.footer {
+    margin-top: 6vh;
+    font-size: clamp(12px, 1.6vh, 18px);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.footer strong {
+    color: white;
+}
+
+.footer a {
+    color: #b0d4ff;
+    text-decoration: none;
+    border-bottom: 1px dotted #b0d4ff;
+}
+
+.footer a:hover {
+    color: white;
+    border-bottom-style: solid;
+}
+
+@media (max-width: 900px) {
+    .presentations {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 </head>
 <body>
-<div class="slide-container">
-
-    <div class="slide active title-slide">
-        <div>
-            <h1>C# Async/Await & Concurrency Training</h1>
-            <h2>Mastering Async Programming for Scalable Applications</h2>
-            
-            <div style="margin-top: 3vh; font-size: clamp(14px, 2vh, 20px); line-height: 1.8;">
-                <p><strong>📚 Key Learning Objectives:</strong></p>
-                <p style="margin-top: 1vh;">✓ Understanding the thread starvation problem</p>
-                <p>✓ Mastering async/await syntax and state machines</p>
-                <p>✓ Avoiding deadlocks and common pitfalls</p>
-                <p>✓ Best practices for scalable applications</p>
-            </div>
-            <div class="info-box" style="margin-top: 3vh;">
-                <strong>Training Duration:</strong> ~90 minutes | <strong>Level:</strong> Junior to Mid-Level
-            </div>
-            <p style="margin-top: 2.5vh; font-size: clamp(14px, 1.8vh, 18px); color: #e0e0e0;">
-                <strong>👨‍🏫 Instructor:</strong> Abubakr Bakhromov
-            </p>
-            <p style="margin-top: 2vh; font-size: clamp(12px, 1.6vh, 16px);">
-                📘 Primary Reference: <a href="https://docs.microsoft.com/dotnet/csharp/async" target="_blank" style="color: #e0e0e0; border-bottom: 1px dotted #e0e0e0;">Microsoft Docs - Async Programming</a>
-            </p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>The Thread Starvation Problem</h2>
-            
-            <h3>Why Threads Are Precious Resources</h3>
-            <p>When a thread handles an I/O request (HTTP, database, file), it <strong>blocks and waits</strong>. During this time, the thread cannot serve other requests.</p>
-            
-            <div class="warning" style="margin-top: 1.5vh;">
-                <strong>⚠️ The Problem:</strong> A web server with 100 threads handling 100 blocking I/O operations = zero capacity for request #101.
-            </div>
-            
-            <div class="code-block" style="margin-top: 1vh;"><span class="code-comment">// Blocking sync: Thread waits doing nothing</span>
-<span class="code-keyword">var</span> content = File.ReadAllText(path);  <span class="code-comment">// Thread blocked 100ms!</span>
-
-<span class="code-comment">// Non-blocking async: Thread released immediately</span>
-<span class="code-keyword">var</span> content = <span class="code-keyword">await</span> File.ReadAllTextAsync(path);  <span class="code-comment">// Thread freed!</span></div>
-            
-            <h3 style="margin-top: 1.5vh;">How Async Solves This</h3>
-            <p>Async allows a thread to <strong>initiate</strong> an I/O operation and immediately return to the pool. When I/O completes, any available thread continues the work.</p>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why This Matters:</strong> Under heavy load, sync servers hit thread starvation (all threads blocked). Async servers keep threads free to accept new requests.
-            </div>
-            
-            <div class="info-box" style="margin-top: 1.5vh;">
-                <strong>💡 Real Impact:</strong> With async, 2-3 threads can handle <strong>thousands</strong> of concurrent requests because threads never sit idle.
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/aspnet/core/performance/performance-best-practices" target="_blank">ASP.NET Core Performance Best Practices</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Threads, ThreadPool & Context Switching</h2>
-            
-            <h3>Thread: Expensive OS Resource</h3>
-            <p>• Each thread consumes <strong>~1MB of stack memory</strong></p>
-            <p>• Requires kernel-mode transitions for scheduling</p>
-            <p>• Creating thousands of threads = memory exhaustion + CPU thrashing</p>
-            
-            <h3 style="margin-top: 1.5vh;">ThreadPool: Managed Solution</h3>
-            <p>ASP.NET Core uses a <strong>ThreadPool</strong> with a dynamically-sized set of worker threads. Work items queue and execute on available threads.</p>
-            
-            <div class="code-block"><span class="code-comment">// ❌ DON'T - Manual thread (unmanaged)</span>
-<span class="code-keyword">new</span> <span class="code-type">Thread</span>(() => DoWork()).Start();  <span class="code-comment">// 1MB overhead, no management</span>
-
-<span class="code-comment">// ✅ DO - Use ThreadPool via Task</span>
-<span class="code-keyword">await</span> <span class="code-type">Task</span>.Run(() => DoWork());  <span class="code-comment">// Managed, reusable threads</span></div>
-            
-            <h3 style="margin-top: 1.5vh;">Context Switching: The Hidden Cost</h3>
-            <p><strong>What happens:</strong> When CPU switches threads, it must save/restore registers, stack pointers, and memory mappings. More threads = more switching = higher overhead.</p>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why this matters:</strong> ThreadPool maintains optimal thread count for your CPU cores. Manual threads bypass this intelligence, leading to contention and poor performance.
-            </div>
-            
-            <div class="hint" style="margin-top: 1.5vh;">
-                <strong>💡 Golden Rule:</strong> Never create threads manually. Let the ThreadPool manage thread lifecycle.
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/dotnet/standard/threading/the-managed-thread-pool" target="_blank">Managed Thread Pool</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>I/O-Bound vs. CPU-Bound: The Critical Distinction</h2>
-            
-            <h3>Understanding the Difference</h3>
-            <p><strong>I/O-Bound:</strong> Thread <em>waits</em> for external resource → Thread is <strong>idle</strong></p>
-            <p><strong>CPU-Bound:</strong> Thread <em>performs computation</em> → Thread is <strong>busy</strong></p>
-            
-            <table class="table" style="margin-top: 1.5vh;">
-                <tr>
-                    <th style="width: 20%;">Type</th>
-                    <th style="width: 40%;">Examples</th>
-                    <th style="width: 40%;">Right Approach & Why</th>
-                </tr>
-                <tr>
-                    <td><strong>I/O-Bound</strong></td>
-                    <td>HTTP calls, DB queries, File I/O</td>
-                    <td><code>async/await</code> - Frees thread during wait</td>
-                </tr>
-                <tr>
-                    <td><strong>CPU-Bound</strong></td>
-                    <td>Image processing, Encryption, Parsing</td>
-                    <td><code>Task.Run</code> or <code>Parallel</code> - Offloads work</td>
-                </tr>
-            </table>
-            
-            <div class="code-block" style="margin-top: 1.5vh;"><span class="code-comment">// I/O-Bound: Thread would be IDLE waiting for DB</span>
-<span class="code-keyword">var</span> users = <span class="code-keyword">await</span> db.Users.ToListAsync();  <span class="code-comment">// ✅ Correct</span>
-
-<span class="code-comment">// CPU-Bound: Thread is BUSY computing</span>
-<span class="code-keyword">var</span> hash = ComputeSHA256(data);  <span class="code-comment">// ✅ Sync is fine</span>
-
-<span class="code-comment">// ❌ WRONG: Wrapping I/O in Task.Run wastes thread</span>
-<span class="code-keyword">var</span> users = <span class="code-keyword">await</span> <span class="code-type">Task</span>.Run(() => db.Users.ToList());  <span class="code-comment">// Thread still waits!</span></div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why Task.Run for I/O is wrong:</strong> You're using a pool thread to block on I/O. That thread could serve other requests. Always use native async I/O methods.
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/dotnet/standard/async-in-depth" target="_blank">Async in Depth</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Deep Dive: How Non-Blocking I/O Actually Works</h2>
-            
-            <h3>The Low-Level Mechanism</h3>
-            
-            <p><strong>Step 1:</strong> Application calls async I/O method (e.g., <code>GetAsync</code>)</p>
-            <p><strong>Step 2:</strong> .NET passes request to OS kernel via I/O Completion Ports (IOCP)</p>
-            <p><strong>Step 3:</strong> Thread is <strong>released</strong> back to pool (doesn't wait)</p>
-            <p><strong>Step 4:</strong> OS kernel/device handles I/O asynchronously</p>
-            <p><strong>Step 5:</strong> When complete, IOCP signals a completion packet</p>
-            <p><strong>Step 6:</strong> Any available thread picks up completion and resumes</p>
-            
-            <div class="info-box" style="margin-top: 1.5vh;">
-                <strong>ℹ️ Key Insight:</strong> The thread doesn't poll or sleep. The OS-level IOCP efficiently manages <strong>thousands</strong> of concurrent I/O operations with zero threads.
-            </div>
-            
-            <h3 style="margin-top: 1.5vh;">Why This Architecture Scales</h3>
-            <div class="code-block"><span class="code-comment">// 1000 concurrent HTTP requests</span>
-<span class="code-keyword">var</span> tasks = urls.Select(url => httpClient.GetAsync(url)).ToArray();
-<span class="code-keyword">await</span> <span class="code-type">Task</span>.WhenAll(tasks);
-
-<span class="code-comment">// Threads used: ~2-3 (for continuations)</span>
-<span class="code-comment">// I/O operations: 1000 (handled by IOCP, not threads)</span></div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why it's so efficient:</strong> IOCP is a kernel-level mechanism. It doesn't use threads to wait—it uses hardware interrupts. When I/O completes, the device signals the CPU directly.
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/windows/win32/fileio/i-o-completion-ports" target="_blank">I/O Completion Ports (Windows)</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>The Four Execution Models</h2>
-            
-            <table class="table">
-                <tr>
-                    <th>Model</th>
-                    <th>Description</th>
-                    <th>Behavior</th>
-                </tr>
-                <tr>
-                    <td><strong>Synchronous</strong></td>
-                    <td>A → B → C (Blocking)</td>
-                    <td>Each operation completes before next starts</td>
-                </tr>
-                <tr>
-                    <td><strong>Asynchronous</strong></td>
-                    <td>A (pause) → B (resume) → C</td>
-                    <td>Thread released during wait, non-blocking</td>
-                </tr>
-                <tr>
-                    <td><strong>Concurrent</strong></td>
-                    <td>Interleaving work</td>
-                    <td>Multiple tasks progress (may be 1 thread)</td>
-                </tr>
-                <tr>
-                    <td><strong>Parallel</strong></td>
-                    <td>Simultaneous work</td>
-                    <td>Multiple cores executing at exact same time</td>
-                </tr>
-            </table>
-            
-            <h3 style="margin-top: 1.5vh;">Code Examples</h3>
-            <div class="code-block"><span class="code-comment">// Synchronous - Takes 6 seconds total</span>
-<span class="code-keyword">var</span> user1 = GetUser(<span class="code-number">1</span>);  <span class="code-comment">// 2 seconds</span>
-<span class="code-keyword">var</span> user2 = GetUser(<span class="code-number">2</span>);  <span class="code-comment">// 2 seconds</span>
-<span class="code-keyword">var</span> user3 = GetUser(<span class="code-number">3</span>);  <span class="code-comment">// 2 seconds</span>
-
-<span class="code-comment">// Asynchronous Concurrent - Takes 2 seconds total</span>
-<span class="code-keyword">var</span> task1 = GetUserAsync(<span class="code-number">1</span>);  <span class="code-comment">// Start</span>
-<span class="code-keyword">var</span> task2 = GetUserAsync(<span class="code-number">2</span>);  <span class="code-comment">// Start</span>
-<span class="code-keyword">var</span> task3 = GetUserAsync(<span class="code-number">3</span>);  <span class="code-comment">// Start</span>
-<span class="code-keyword">await</span> <span class="code-type">Task</span>.WhenAll(task1, task2, task3);  <span class="code-comment">// All running concurrently</span>
-
-<span class="code-comment">// Parallel - CPU-bound, uses multiple cores</span>
-Parallel.For(<span class="code-number">0</span>, <span class="code-number">1000</span>, i => ProcessItem(items[i]));</div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Key Distinction:</strong> Async ≠ Parallel. Async can be concurrent on a single thread (context switching). Parallel requires multiple CPU cores running simultaneously.
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/dotnet/standard/async" target="_blank">Asynchronous Programming Patterns</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Demo: The Blocking Effect (Synchronous)</h2>
-            
-            <h3>ASP.NET Core Endpoint - Blocking Version</h3>
-            
-            <div class="code-block">[<span class="code-type">HttpGet</span>(<span class="code-string">"blocking"</span>)]
-<span class="code-keyword">public</span> <span class="code-type">IActionResult</span> GetBlocking()
-{
-    <span class="code-type">Thread</span>.Sleep(<span class="code-number">5000</span>);  <span class="code-comment">// Simulates I/O: blocks thread for 5 seconds</span>
-    <span class="code-keyword">return</span> Ok(<span class="code-string">"Hello"</span>);
-}</div>
-            
-            <div class="warning" style="margin-top: 1.5vh;">
-                <strong>⚠️ Capacity Analysis:</strong><br>
-                • ThreadPool Size: 100 threads<br>
-                • Request Duration: 5 seconds (blocking)<br>
-                • <strong>Max Throughput: 100 / 5 = 20 requests/second</strong><br>
-                • Request #101: Must wait in queue
-            </div>
-            
-            <h3 style="margin-top: 1.5vh;">Why This Doesn't Scale</h3>
-            <p>With 1000 concurrent users, 980 requests are <strong>queued</strong> or <strong>timing out</strong>. Each blocked thread is a wasted resource that could serve other requests.</p>
-            
-            <div class="code-block"><span class="code-comment">// Under load with 1000 concurrent requests:</span>
-<span class="code-comment">// Requests 1-100:   Being processed (threads blocked)</span>
-<span class="code-comment">// Requests 101-1000: Waiting or timing out</span>
-<span class="code-comment">// Result: Poor UX, server appears "slow"</span></div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why this fails:</strong> Blocking threads on I/O is like parking cars in drive-through lanes—the lane is occupied but no work is happening. You need more lanes (threads) for the same throughput.
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/aspnet/core/performance/performance-best-practices" target="_blank">ASP.NET Core Performance</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Demo: The Async Fix (Non-Blocking)</h2>
-            
-            <h3>ASP.NET Core Endpoint - Async Version</h3>
-            
-            <div class="code-block">[<span class="code-type">HttpGet</span>(<span class="code-string">"async"</span>)]
-<span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">IActionResult</span>&gt; GetAsync()
-{
-    <span class="code-keyword">await</span> <span class="code-type">Task</span>.Delay(<span class="code-number">5000</span>);  <span class="code-comment">// Simulates I/O: releases thread</span>
-    <span class="code-keyword">return</span> Ok(<span class="code-string">"Hello"</span>);
-}</div>
-            
-            <div class="info-box" style="margin-top: 1.5vh;">
-                <strong>✅ Capacity Analysis (Async):</strong><br>
-                • ThreadPool Size: 100 threads<br>
-                • Request Duration: 5 seconds (non-blocking)<br>
-                • <strong>Max Throughput: Thousands of requests/second</strong><br>
-                • Request #1001: No problem! Threads handle it during I/O waits
-            </div>
-            
-            <h3 style="margin-top: 1.5vh;">Why This Scales</h3>
-            <p>Threads are freed during <code>await Task.Delay</code>. Those same 100 threads juggle thousands of concurrent requests by handling them in segments (before await, after await).</p>
-            
-            <div class="code-block"><span class="code-comment">// Under load with 1000 concurrent requests:</span>
-<span class="code-comment">// Threads actively used:  ~2-10 (for continuations)</span>
-<span class="code-comment">// Requests in flight:     1000 (all progressing)</span>
-<span class="code-comment">// Requests blocked:       0</span>
-<span class="code-comment">// Result: All users get fast responses</span></div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Real-World Impact:</strong> A production team switched from sync to async and went from <strong>200 req/sec</strong> to <strong>5000 req/sec</strong> on the same hardware. That's 25x improvement!
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/aspnet/core/fundamentals/middleware" target="_blank">ASP.NET Core Middleware</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>The Core Syntax: async & await</h2>
-            
-            <h3>The Two Keywords Explained</h3>
-            <p><code>async</code> - Method modifier that enables <code>await</code> usage</p>
-            <p><code>await</code> - Operator that suspends execution and returns control</p>
-            
-            <div class="code-block" style="margin-top: 1.5vh;"><span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">string</span>&gt; FetchDataAsync()
-{
-    <span class="code-comment">// Line 1: Executes synchronously</span>
-    Console.WriteLine(<span class="code-string">"Starting..."</span>);
+<div class="container">
+    <h1>🎓 Vention Lab 2025-2026</h1>
+    <div class="subtitle">.NET Advanced Training Series</div>
     
-    <span class="code-comment">// Line 2: PAUSE HERE - thread released</span>
-    <span class="code-keyword">var</span> response = <span class="code-keyword">await</span> httpClient.GetAsync(url);
+    <div class="presentations">
+        <!-- Async/Await Presentation -->
+        <div class="presentation-card">
+            <h2>C# Async/Await & Concurrency</h2>
+            <p>Master asynchronous programming for scalable, high-performance applications</p>
+            
+            <div class="meta">
+                <div class="meta-item">
+                    <span class="meta-label">Slides</span>
+                    <span class="meta-value">50</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Duration</span>
+                    <span class="meta-value">~90 min</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Level</span>
+                    <span class="meta-value">Junior+</span>
+                </div>
+            </div>
+            
+            <div class="topics">
+                <ul>
+                    <li>Thread Starvation & Non-Blocking I/O</li>
+                    <li>async/await Syntax & State Machines</li>
+                    <li>Deadlock Prevention</li>
+                    <li>Task.WhenAll, Cancellation, Best Practices</li>
+                </ul>
+            </div>
+            
+            <a href="async-await.html" class="btn">Start Presentation →</a>
+        </div>
+        
+        <!-- Best Practices Presentation -->
+        <div class="presentation-card">
+            <h2>.NET Best Practices</h2>
+            <p>Professional patterns for logging, configuration, error handling, and documentation</p>
+            
+            <div class="meta">
+                <div class="meta-item">
+                    <span class="meta-label">Slides</span>
+                    <span class="meta-value">100</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Duration</span>
+                    <span class="meta-value">~120 min</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Level</span>
+                    <span class="meta-value">Junior+</span>
+                </div>
+            </div>
+            
+            <div class="topics">
+                <ul>
+                    <li>Structured Logging & Observability</li>
+                    <li>Configuration Management & Secrets</li>
+                    <li>Robust Error Handling Strategies</li>
+                    <li>Documentation as Code</li>
+                </ul>
+            </div>
+            
+            <a href="best-practices.html" class="btn">Start Presentation →</a>
+        </div>
+    </div>
     
-    <span class="code-comment">// Line 3: RESUME HERE - when I/O completes (may be different thread)</span>
-    Console.WriteLine(<span class="code-string">"Received response"</span>);
-    
-    <span class="code-keyword">return await</span> response.Content.ReadAsStringAsync();
-}</div>
-            
-            <h3 style="margin-top: 1.5vh;">What Actually Happens</h3>
-            <p>1. Method starts executing <strong>synchronously</strong> until first await</p>
-            <p>2. At <code>await</code>, method <strong>pauses</strong> and returns a Task to caller</p>
-            <p>3. Thread is <strong>freed</strong> to do other work</p>
-            <p>4. When awaited operation completes, execution <strong>resumes</strong> after the await</p>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why "async all the way":</strong> If you mix sync/async (calling async method without await), you lose all benefits. The calling thread still blocks waiting for result.
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/dotnet/csharp/language-reference/operators/await" target="_blank">await operator</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Return Types & Method Signatures</h2>
-            
-            <h3>Valid Return Types for Async Methods</h3>
-            <p><code>Task</code> - For methods that perform work but don't return a value</p>
-            <p><code>Task&lt;T&gt;</code> - For methods that return a value of type T</p>
-            <p><code>void</code> - ONLY for event handlers (explained later)</p>
-            <p><code>ValueTask&lt;T&gt;</code> - Performance optimization (advanced)</p>
-            
-            <div class="code-block" style="margin-top: 1.5vh;"><span class="code-comment">// Returns Task (no value)</span>
-<span class="code-keyword">public async</span> <span class="code-type">Task</span> SendEmailAsync(<span class="code-keyword">string</span> to, <span class="code-keyword">string</span> subject)
-{
-    <span class="code-keyword">await</span> smtpClient.SendAsync(to, subject);
-    <span class="code-comment">// No return statement needed</span>
-}
-
-<span class="code-comment">// Returns Task&lt;string&gt; (returns string value)</span>
-<span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">string</span>&gt; GetUserNameAsync(<span class="code-keyword">int</span> id)
-{
-    <span class="code-keyword">var</span> user = <span class="code-keyword">await</span> _db.Users.FindAsync(id);
-    <span class="code-keyword">return</span> user.Name;  <span class="code-comment">// Returns string, but signature is Task&lt;string&gt;</span>
-}</div>
-            
-            <h3 style="margin-top: 1.5vh;">Why Task&lt;T&gt; Instead of Just T?</h3>
-            <p>The Task represents the <strong>future result</strong>. When you call an async method, it returns immediately with a Task (a promise), not the actual result. The result arrives later when you await it.</p>
-            
-            <div class="warning" style="margin-top: 1.5vh;">
-                <strong>⚠️ Common Mistake:</strong> You return <code>string</code> in the body, but declare <code>Task&lt;string&gt;</code> in signature. Compiler wraps your return value automatically.
-            </div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why Task wrapping:</strong> Tasks allow the caller to chain operations, handle errors, and await completion. They're the standardized way to represent "work in progress."
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/dotnet/csharp/programming-guide/concepts/async/async-return-types" target="_blank">Async Return Types</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Execution Flow: Step-by-Step Walkthrough</h2>
-            
-            <h3>What Happens When You Await</h3>
-            
-            <div class="code-block"><span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">Result</span>&gt; WorkAsync()
-{
-    Console.WriteLine($<span class="code-string">"Start: Thread {Thread.CurrentThread.ManagedThreadId}"</span>);
-    <span class="code-keyword">var</span> data = <span class="code-keyword">await</span> FetchAsync();         <span class="code-comment">// PAUSE 1</span>
-    Console.WriteLine($<span class="code-string">"After fetch: Thread {Thread.CurrentThread.ManagedThreadId}"</span>);
-    <span class="code-keyword">var</span> result = <span class="code-keyword">await</span> ProcessAsync(data); <span class="code-comment">// PAUSE 2</span>
-    Console.WriteLine($<span class="code-string">"After process: Thread {Thread.CurrentThread.ManagedThreadId}"</span>);
-    <span class="code-keyword">return</span> result;
-}</div>
-            
-            <h3 style="margin-top: 1.5vh;">Trace the Execution</h3>
-            <p>• <strong>Line 1-2:</strong> Executes synchronously on caller's thread (say, thread 5)</p>
-            <p>• <strong>Line 3 (await FetchAsync):</strong> Pauses, <strong>thread 5 released</strong></p>
-            <p>• <strong>Network I/O happens...</strong> (thread 5 handles other requests)</p>
-            <p>• <strong>I/O completes:</strong> Continuation scheduled (may be <strong>thread 7</strong>)</p>
-            <p>• <strong>Line 4-5:</strong> Resumes on thread 7, may print different thread ID</p>
-            <p>• <strong>Line 6:</strong> Pauses again, thread 7 released</p>
-            <p>• <strong>Resume:</strong> May continue on <strong>thread 3</strong></p>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why different threads:</strong> The ThreadPool assigns any available thread for the continuation. The important part: threads are never blocking/waiting.
-            </div>
-            
-            <div class="info-box" style="margin-top: 1.5vh;">
-                <strong>ℹ️ Key Insight:</strong> Thread IDs CAN differ across awaits! This is normal. The thread is doing useful work, not waiting.
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/dotnet/standard/asynchronous-programming-patterns/consuming-the-task-based-asynchronous-pattern" target="_blank">Consuming TAP</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>The Compiler State Machine (Part 1)</h2>
-            
-            <h3>High-Level Explanation</h3>
-            <p>The compiler rewrites your async method into a <strong>state machine class</strong> that implements <code>IAsyncStateMachine</code>.</p>
-            
-            <p style="margin-top: 1.5vh;"><strong>Why?</strong> The method must be able to pause, store its state, and resume later. State machines enable this behavior.</p>
-            
-            <h3 style="margin-top: 2vh;">Each await = A State Transition</h3>
-            
-            <div class="code-block"><span class="code-comment">// Your code</span>
-<span class="code-keyword">var</span> data = <span class="code-keyword">await</span> FetchAsync();        <span class="code-comment">// State 0</span>
-<span class="code-keyword">var</span> result = <span class="code-keyword">await</span> ProcessAsync(data); <span class="code-comment">// State 1</span>
-<span class="code-keyword">return</span> result;                        <span class="code-comment">// State 2 (final)</span></div>
-            
-            <div class="hint" style="margin-top: 2vh;">
-                <strong>💡 Concept:</strong> The compiler transforms each await into a state. The state machine knows which state it's in and what to execute next.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>The Compiler State Machine (Part 2)</h2>
-            
-            <h3>Deeper Dive: How It Works</h3>
-            
-            <p><strong>Local variables become fields:</strong> Your method's local variables are stored as fields in the state machine class. This allows them to persist across await points.</p>
-            
-            <p style="margin-top: 1.5vh;"><strong>MoveNext() drives execution:</strong> The <code>MoveNext()</code> method is called to advance the state machine.</p>
-            
-            <div class="code-block"><span class="code-comment">// Compiler-generated (simplified concept)</span>
-<span class="code-keyword">class</span> &lt;MyAsyncMethod_StateMachine&gt;
-{
-    <span class="code-keyword">int</span> state = <span class="code-number">0</span>;
-    <span class="code-keyword">object</span> data;      <span class="code-comment">// Local variables become fields</span>
-    <span class="code-keyword">object</span> result;
-    
-    <span class="code-keyword">void</span> <span class="code-method">MoveNext</span>()
-    {
-        <span class="code-keyword">switch</span> (state) {
-            <span class="code-keyword">case</span> <span class="code-number">0</span>: data = <span class="code-keyword">await</span> FetchAsync(); state = <span class="code-number">1</span>; <span class="code-keyword">break</span>;
-            <span class="code-keyword">case</span> <span class="code-number">1</span>: result = <span class="code-keyword">await</span> ProcessAsync(data); state = <span class="code-number">2</span>; <span class="code-keyword">break</span>;
-            <span class="code-keyword">case</span> <span class="code-number">2</span>: <span class="code-keyword">return</span> result;
-        }
-    }
-}</div>
-            
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>ℹ️ Why This Matters:</strong> This persistence is why local variables maintain their values across awaits. They're actually fields, not stack variables.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Tasks & Task<T> Objects</h2>
-            
-            <h3>What a Task Represents</h3>
-            <p>A <code>Task</code> is a <strong>promise</strong> of work that will complete in the future.</p>
-            
-            <h3 style="margin-top: 1.5vh;">Key Properties</h3>
-            <p><code>IsCompleted</code> - True when the task has finished (successfully or not)</p>
-            <p><code>IsFaulted</code> - True if the task threw an exception</p>
-            <p><code>Result</code> - The result value (BLOCKS if not complete!)</p>
-            
-            <div class="warning" style="margin-top: 2vh;">
-                <strong>⚠️ WARNING:</strong> Never access <code>Task.Result</code> or call <code>Task.Wait()</code>. Both block the thread and can cause deadlocks!
-            </div>
-            
-            <div class="code-block" style="margin-top: 2vh;"><span class="code-comment">// ❌ WRONG - Blocks thread</span>
-<span class="code-keyword">var</span> result = GetDataAsync().Result;
-
-<span class="code-comment">// ✅ CORRECT - Non-blocking</span>
-<span class="code-keyword">var</span> result = <span class="code-keyword">await</span> GetDataAsync();</div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>TaskCompletionSource<T>: The Bridge</h2>
-            
-            <h3>Purpose</h3>
-            <p>Manually create a <code>Task</code> to wrap non-TAP APIs (events, old callbacks, legacy code).</p>
-            
-            <h3 style="margin-top: 1.5vh;">How It Works</h3>
-            <p><code>SetResult(value)</code> - Marks the task as completed with a result</p>
-            <p><code>SetException(ex)</code> - Marks the task as faulted</p>
-            <p><code>SetCanceled()</code> - Marks the task as canceled</p>
-            
-            <div class="code-block" style="margin-top: 2vh;"><span class="code-keyword">public</span> <span class="code-type">Task</span>&lt;<span class="code-type">string</span>&gt; WrapLegacyEventAsync()
-{
-    <span class="code-keyword">var</span> tcs = <span class="code-keyword">new</span> <span class="code-type">TaskCompletionSource</span>&lt;<span class="code-type">string</span>&gt;();
-    
-    <span class="code-comment">// Hook into legacy event</span>
-    LegacyClass.DataReady += (data) => tcs.SetResult(data);
-    LegacyClass.Error += (ex) => tcs.SetException(ex);
-    
-    LegacyClass.StartOperation();
-    
-    <span class="code-keyword">return</span> tcs.Task;  <span class="code-comment">// Now awaitable!</span>
-}
-
-<span class="code-comment">// Usage</span>
-<span class="code-keyword">var</span> result = <span class="code-keyword">await</span> WrapLegacyEventAsync();</div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>ValueTask<T>: Allocation Optimization</h2>
-            
-            <h3>The Problem ValueTask Solves</h3>
-            <p>Every <code>Task&lt;T&gt;</code> is a heap-allocated object. For methods that complete synchronously (cached data), this allocation is wasteful.</p>
-            
-            <h3 style="margin-top: 1.5vh;">ValueTask&lt;T&gt;: A Struct Alternative</h3>
-            <p><code>ValueTask&lt;T&gt;</code> is a struct (value type). If the result is immediately available, no heap allocation occurs.</p>
-            
-            <div class="code-block" style="margin-top: 2vh;"><span class="code-keyword">private</span> <span class="code-type">Dictionary</span>&lt;<span class="code-keyword">int</span>, <span class="code-type">User</span>&gt; _cache = <span class="code-keyword">new</span>();
-
-<span class="code-keyword">public</span> <span class="code-type">ValueTask</span>&lt;<span class="code-type">User</span>&gt; GetUserAsync(<span class="code-keyword">int</span> id)
-{
-    <span class="code-comment">// Fast path: cached result, no allocation</span>
-    <span class="code-keyword">if</span> (_cache.TryGetValue(id, <span class="code-keyword">out</span> <span class="code-keyword">var</span> user))
-        <span class="code-keyword">return new</span> <span class="code-type">ValueTask</span>&lt;<span class="code-type">User</span>&gt;(user);
-    
-    <span class="code-comment">// Slow path: async I/O</span>
-    <span class="code-keyword">return new</span> <span class="code-type">ValueTask</span>&lt;<span class="code-type">User</span>&gt;(FetchFromDbAsync(id));
-}</div>
-            
-            <div class="warning" style="margin-top: 2vh;">
-                <strong>⚠️ Trade-off:</strong> Can only be awaited once. More complex than Task. Use only after profiling shows allocation is a bottleneck.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>SynchronizationContext</h2>
-            
-            <h3>What Is It?</h3>
-            <p>A <strong>scheduler</strong> that determines where a continuation runs after an await.</p>
-            
-            <h3 style="margin-top: 1.5vh;">Platform Differences</h3>
-            <p><strong>UI apps (WPF, WinForms):</strong> Have a UI SynchronizationContext (must resume on UI thread)</p>
-            <p><strong>Classic ASP.NET:</strong> Has AspNetSynchronizationContext (per-request context)</p>
-            <p><strong>ASP.NET Core:</strong> No SynchronizationContext (null)</p>
-            <p><strong>Console apps:</strong> No SynchronizationContext (null)</p>
-            
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>ℹ️ Why It Matters:</strong> By default, await tries to resume on the original SynchronizationContext. This can cause deadlocks if that context is blocked.
-            </div>
-            
-            <p style="margin-top: 2vh;"><strong>Visual:</strong> Diagram showing a SyncContext boundary and how continuations resume on it.</p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>ExecutionContext</h2>
-            
-            <h3>What Is It?</h3>
-            <p>Contextual data that <strong>automatically flows</strong> across async operations. Unlike SynchronizationContext (which is platform-specific), ExecutionContext flows in <strong>all</strong> .NET applications.</p>
-            
-            <h3 style="margin-top: 1.5vh;">What Flows in ExecutionContext?</h3>
-            
-            <p style="margin-top: 1vh;"><strong>1. Thread.CurrentCulture and Thread.CurrentUICulture</strong></p>
-            <p style="margin-left: 2vw;">Culture settings for formatting dates, numbers, and UI text. Ensures your async code respects user's locale settings even when resuming on different threads.</p>
-            
-            <p style="margin-top: 1vh;"><strong>2. AsyncLocal&lt;T&gt; values</strong></p>
-            <p style="margin-left: 2vw;">Thread-local storage that flows across async boundaries. Used for correlation IDs, request context, logging context, etc. Each async flow gets its own isolated copy.</p>
-            
-            <p style="margin-top: 1vh;"><strong>3. Security principal/identity</strong></p>
-            <p style="margin-left: 2vw;">The current user's identity (<code>Thread.CurrentPrincipal</code>). Critical for authorization checks in async code - the user context is preserved across awaits.</p>
-            
-            <p style="margin-top: 1vh;"><strong>4. Other ambient data</strong></p>
-            <p style="margin-left: 2vw;">Impersonation context, host execution context, and other framework-specific data that needs to flow with async operations.</p>
-            
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>ℹ️ Key Point:</strong> ExecutionContext is separate from SynchronizationContext. ExecutionContext flows automatically in <strong>all</strong> apps (console, web, UI); you rarely need to think about it.
-            </div>
-            
-            <div class="hint" style="margin-top: 2vh;">
-                <strong>💡 Guarantee:</strong> These values are preserved across awaits, even when resuming on a different thread. The .NET runtime handles this automatically.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>ConfigureAwait(false) Mechanics</h2>
-            
-            <h3>What Is SynchronizationContext?</h3>
-            <p>A <strong>scheduler</strong> that determines where a continuation runs after an await. By default, await tries to resume on the <strong>original SynchronizationContext</strong>.</p>
-            
-            <p style="margin-top: 1.5vh;"><strong>Platform Differences:</strong></p>
-            <p>• UI apps (WPF, WinForms): Have UI SynchronizationContext (must resume on UI thread)</p>
-            <p>• Classic ASP.NET: Has AspNetSynchronizationContext (per-request context)</p>
-            <p>• ASP.NET Core: No SynchronizationContext (null)</p>
-            <p>• Console apps: No SynchronizationContext (null)</p>
-            
-            <h3 style="margin-top: 1.5vh;">How ConfigureAwait(false) Works</h3>
-            <div class="code-block"><span class="code-comment">// Default behavior</span>
-<span class="code-keyword">var</span> data = <span class="code-keyword">await</span> GetDataAsync();
-<span class="code-comment">// Tries to resume on original context</span>
-
-<span class="code-comment">// With ConfigureAwait(false)</span>
-<span class="code-keyword">var</span> data = <span class="code-keyword">await</span> GetDataAsync().ConfigureAwait(<span class="code-keyword">false</span>);
-<span class="code-comment">// Resumes on any available thread pool thread</span></div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why this matters:</strong> In UI apps, if the UI thread is blocked waiting for a task, and that task tries to resume on the UI thread, you get DEADLOCK. ConfigureAwait(false) prevents this.
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task.configureawait" target="_blank">Task.ConfigureAwait Method</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>ConfigureAwait(false) Practical Rules</h2>
-            
-            <h3>Rule 1: Library/Service Code</h3>
-            <p><strong>ALWAYS use ConfigureAwait(false)</strong> in library code and service layers to prevent deadlocks for callers.</p>
-            
-            <div class="code-block"><span class="code-comment">// Library/service layer code</span>
-<span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">Data</span>&gt; GetDataAsync()
-{
-    <span class="code-keyword">var</span> response = <span class="code-keyword">await</span> httpClient.GetAsync(url)
-        .ConfigureAwait(<span class="code-keyword">false</span>);  <span class="code-comment">// Don't care about context</span>
-    <span class="code-keyword">return await</span> response.Content.ReadAsAsync&lt;<span class="code-type">Data</span>&gt;()
-        .ConfigureAwait(<span class="code-keyword">false</span>);
-}</div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why in libraries:</strong> You don't know your caller's context. If they have a SynchronizationContext and block on your method, you'd deadlock them. ConfigureAwait(false) makes your library safe.
-            </div>
-            
-            <h3 style="margin-top: 1.5vh;">Rule 2: Top-Level/UI Code</h3>
-            <p><strong>OMIT ConfigureAwait(false)</strong> (or use true) to ensure resumption on the UI thread/main context.</p>
-            
-            <div class="code-block"><span class="code-comment">// UI event handler</span>
-<span class="code-keyword">private async void</span> OnButtonClick(<span class="code-keyword">object</span> sender, <span class="code-type">EventArgs</span> e)
-{
-    <span class="code-keyword">var</span> data = <span class="code-keyword">await</span> GetDataAsync();  <span class="code-comment">// NO ConfigureAwait(false)</span>
-    textBox.Text = data;  <span class="code-comment">// Must run on UI thread</span>
-}</div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why omit in UI code:</strong> UI controls can ONLY be accessed from the UI thread. If you use ConfigureAwait(false), you'd resume on a background thread and crash when accessing textBox.
-            </div>
-            
-            <h3 style="margin-top: 1.5vh;">ASP.NET Core Exception</h3>
-            <p>ASP.NET Core has no SynchronizationContext, so ConfigureAwait(false) is <strong>optional</strong> (but still good practice for consistency).</p>
-            
-            <p class="reference">📘 <a href="https://devblogs.microsoft.com/dotnet/configureawait-faq" target="_blank">ConfigureAwait FAQ - Stephen Toub</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>The Deadlock Trap (Classic Scenario)</h2>
-            
-            <h3>The Classic Deadlock</h3>
-            <p>Classic ASP.NET or UI app: A method blocks on an async call using <code>.Result</code> or <code>.Wait()</code>.</p>
-            
-            <div class="code-block"><span class="code-comment">// ❌ DEADLOCK SCENARIO</span>
-<span class="code-keyword">public</span> <span class="code-type">ActionResult</span> MyAction()  <span class="code-comment">// Running on UI/request context</span>
-{
-    <span class="code-keyword">var</span> user = GetUserAsync().Result;  <span class="code-comment">// BLOCKS, awaits resumption</span>
-    <span class="code-keyword">return</span> View(user);  <span class="code-comment">// Never reached!</span>
-}</div>
-            
-            <div class="warning" style="margin-top: 1.5vh;">
-                <strong>⚠️ Deadlock Cycle:</strong><br>
-                1. Thread calls .Result on UI context<br>
-                2. Thread blocks waiting for Task<br>
-                3. Task completes, tries to resume on UI context<br>
-                4. UI context can't run (blocked by thread)<br>
-                5. <strong>DEADLOCK - mutual waiting</strong>
-            </div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why this deadlocks:</strong> UI apps have a single-threaded SynchronizationContext. The blocked thread holds the only way to run continuations. The continuation needs that thread to run. Neither can proceed.
-            </div>
-            
-            <h3 style="margin-top: 1.5vh;">Where This Happens</h3>
-            <p>• WPF/WinForms UI apps (single UI thread)</p>
-            <p>• Classic ASP.NET (per-request context)</p>
-            <p>• <strong>NOT</strong> ASP.NET Core (no SynchronizationContext)</p>
-            
-            <p class="reference">📘 <a href="https://blog.stephencleary.com/2012/07/dont-block-on-async-code.html" target="_blank">Don't Block on Async Code - Stephen Cleary</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>The Deadlock Code (The Anti-Pattern)</h2>
-            
-            <h3>The Dangerous Code</h3>
-            
-            <div class="code-block"><span class="code-comment">// ❌ DEADLOCK ANTI-PATTERN</span>
-<span class="code-keyword">public</span> <span class="code-type">ActionResult</span> MyAction()
-{
-    <span class="code-keyword">var</span> user = GetUserAsync().Result;  <span class="code-comment">// BLOCKS</span>
-    <span class="code-keyword">return</span> View(user);
-}
-
-<span class="code-keyword">private async</span> <span class="code-type">Task</span>&lt;<span class="code-type">User</span>&gt; GetUserAsync()
-{
-    <span class="code-keyword">return await</span> _db.Users.FirstOrDefaultAsync();
-    <span class="code-comment">// Tries to resume on the blocked context</span>
-}</div>
-            
-            <h3 style="margin-top: 2vh;">Why It Deadlocks</h3>
-            <p>• Main thread blocks on .Result</p>
-            <p>• SynchronizationContext is now blocked</p>
-            <p>• GetUserAsync() completes and tries to resume</p>
-            <p>• Can't resume because context is blocked</p>
-            <p>• Main thread can't unblock because it's waiting</p>
-            
-            <div class="warning" style="margin-top: 2vh;">
-                <strong>⚠️ This code will hang forever in UI apps and Classic ASP.NET</strong>
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Fix 1: The Principle of Async All The Way</h2>
-            
-            <h3>The Primary Solution</h3>
-            <p>Refactor the calling method to be async and use await. No blocking, no deadlock.</p>
-            
-            <div class="code-block"><span class="code-comment">// ✅ CORRECT - Async all the way</span>
-<span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">ActionResult</span>&gt; MyActionAsync()
-{
-    <span class="code-keyword">var</span> user = <span class="code-keyword">await</span> GetUserAsync();  <span class="code-comment">// No blocking!</span>
-    <span class="code-keyword">return</span> View(user);
-}
-
-<span class="code-keyword">private async</span> <span class="code-type">Task</span>&lt;<span class="code-type">User</span>&gt; GetUserAsync()
-{
-    <span class="code-keyword">return await</span> _db.Users.FirstOrDefaultAsync();
-}</div>
-            
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>✅ Why This Works:</strong> No thread ever blocks. When GetUserAsync() completes, the continuation runs normally on the context.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Fix 2: The Library Fallback</h2>
-            
-            <h3>Secondary Solution</h3>
-            <p>Use <code>ConfigureAwait(false)</code> in library/lower layers. Only if you cannot control the caller.</p>
-            
-            <div class="code-block"><span class="code-comment">// ✅ Library code with ConfigureAwait(false)</span>
-<span class="code-keyword">private async</span> <span class="code-type">Task</span>&lt;<span class="code-type">User</span>&gt; GetUserAsync()
-{
-    <span class="code-keyword">var</span> user = <span class="code-keyword">await</span> _db.Users
-        .FirstOrDefaultAsync()
-        .ConfigureAwait(<span class="code-keyword">false</span>);  <span class="code-comment">// Don't capture context</span>
-    <span class="code-keyword">return</span> user;
-}</div>
-            
-            <h3 style="margin-top: 2vh;">Why This Helps</h3>
-            <p>The continuation doesn't try to resume on the blocked context. It runs on any thread pool thread.</p>
-            
-            <div class="warning" style="margin-top: 2vh;">
-                <strong>⚠️ Important:</strong> Fix 1 (async all the way) is always better. Fix 2 just makes the code more tolerant of bad callers.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Deadlocks in ASP.NET Core?</h2>
-            
-            <h3>Lower Deadlock Risk</h3>
-            <p>ASP.NET Core has <strong>no SynchronizationContext</strong>. This eliminates the classic deadlock scenario.</p>
-            
-            <table class="table" style="margin-top: 2vh;">
-                <tr>
-                    <th></th>
-                    <th>Classic ASP.NET</th>
-                    <th>ASP.NET Core</th>
-                </tr>
-                <tr>
-                    <td><strong>SyncContext</strong></td>
-                    <td>Yes (per-request)</td>
-                    <td>No (null)</td>
-                </tr>
-                <tr>
-                    <td><strong>.Result Deadlock?</strong></td>
-                    <td>Yes (high risk)</td>
-                    <td>No (low risk)</td>
-                </tr>
-                <tr>
-                    <td><strong>Still Bad?</strong></td>
-                    <td>Yes</td>
-                    <td><strong>Yes!</strong></td>
-                </tr>
-            </table>
-            
-            <div class="warning" style="margin-top: 2vh;">
-                <strong>⚠️ Even in ASP.NET Core:</strong> Blocking with .Result still wastes ThreadPool threads. It's about throughput, not deadlocks.
-            </div>
-            
-            <div class="hint" style="margin-top: 2vh;">
-                <strong>💡 Hint:</strong> Still avoid .Result/.Wait() even in ASP.NET Core.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Fire-and-Forget: The Silent Killer</h2>
-            
-            <h3>The Anti-Pattern</h3>
-            
-            <div class="code-block"><span class="code-comment">// ❌ WRONG - Exception is LOST</span>
-<span class="code-keyword">public void</span> OnButtonClick()
-{
-    _ = SendEmailAsync();  <span class="code-comment">// Fire and forget</span>
-}
-
-<span class="code-comment">// If SendEmailAsync throws, nobody knows!</span></div>
-            
-            <h3 style="margin-top: 2vh;">Why It's Dangerous</h3>
-            <p>• Exception thrown in the async method is never observed</p>
-            <p>• App may silently fail</p>
-            <p>• You can't tell when the work completes</p>
-            <p>• Hard to debug</p>
-            
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>ℹ️ Better Approach:</strong> Make caller async and await properly.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Handling Background Work Properly</h2>
-            
-            <h3>Solution 1: Make Caller Async</h3>
-            
-            <div class="code-block"><span class="code-keyword">public async</span> <span class="code-type">Task</span> OnButtonClickAsync()
-{
-    <span class="code-keyword">await</span> SendEmailAsync();  <span class="code-comment">// Properly awaited</span>
-}</div>
-            
-            <h3 style="margin-top: 2vh;">Solution 2: Use IHostedService (ASP.NET Core)</h3>
-            
-            <div class="code-block"><span class="code-keyword">public void</span> OnButtonClick()
-{
-    _backgroundQueue.QueueBackgroundWorkItem(<span class="code-keyword">async</span> ct =>
-    {
-        <span class="code-keyword">try</span>
-        {
-            <span class="code-keyword">await</span> SendEmailAsync();
-        }
-        <span class="code-keyword">catch</span> (<span class="code-type">Exception</span> ex)
-        {
-            _logger.LogError(ex, <span class="code-string">"Email send failed"</span>);
-        }
-    });
-}</div>
-            
-            <div class="hint" style="margin-top: 2vh;">
-                <strong>💡 Hint:</strong> If you MUST fire-and-forget, log exceptions inside the task body.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Async in Constructors (The Factory Pattern)</h2>
-            
-            <h3>The Problem</h3>
-            <p>Constructors cannot be async. A constructor must synchronously return a fully initialized object.</p>
-            
-            <div class="code-block"><span class="code-comment">// ❌ ILLEGAL - Compiler error</span>
-<span class="code-keyword">public async</span> MyService()
-{
-    Data = <span class="code-keyword">await</span> FetchAsync();
-}</div>
-            
-            <h3 style="margin-top: 2vh;">Solution: Factory Method</h3>
-            
-            <div class="code-block"><span class="code-keyword">public class</span> <span class="code-type">MyService</span>
-{
-    <span class="code-keyword">private</span> MyService() { }  <span class="code-comment">// Private constructor</span>
-    
-    <span class="code-keyword">public static async</span> <span class="code-type">Task</span>&lt;<span class="code-type">MyService</span>&gt; CreateAsync()
-    {
-        <span class="code-keyword">var</span> instance = <span class="code-keyword">new</span> MyService();
-        instance.Data = <span class="code-keyword">await</span> FetchAsync();
-        <span class="code-keyword">return</span> instance;
-    }
-}
-
-<span class="code-comment">// Usage</span>
-<span class="code-keyword">var</span> service = <span class="code-keyword">await</span> MyService.CreateAsync();</div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Nested Async Chain Walkthrough</h2>
-            
-            <h3>Real Application Architecture</h3>
-            <p>Controller → Service → Repository → Database</p>
-            
-            <div class="code-block"><span class="code-comment">// Controller Layer</span>
-<span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">IActionResult</span>&gt; GetUser(<span class="code-keyword">int</span> id)
-{
-    <span class="code-keyword">var</span> user = <span class="code-keyword">await</span> _service.GetUserAsync(id);
-    <span class="code-keyword">return</span> Ok(user);
-}
-
-<span class="code-comment">// Service Layer</span>
-<span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">User</span>&gt; GetUserAsync(<span class="code-keyword">int</span> id)
-{
-    <span class="code-keyword">return await</span> _repo.GetUserByIdAsync(id);
-}
-
-<span class="code-comment">// Repository Layer</span>
-<span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">User</span>&gt; GetUserByIdAsync(<span class="code-keyword">int</span> id)
-{
-    <span class="code-keyword">return await</span> _db.Users.FirstOrDefaultAsync(u => u.Id == id);
-}</div>
-            
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>ℹ️ Key Points:</strong> No blocking, exceptions propagate up, threads never wait.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Exception Handling: Basics</h2>
-            
-            <h3>try/catch Works Normally</h3>
-            <p>Exceptions from awaited tasks are caught by the resuming thread's catch block.</p>
-            
-            <div class="code-block"><span class="code-keyword">public async</span> <span class="code-type">Task</span> ProcessAsync()
-{
-    <span class="code-keyword">try</span>
-    {
-        <span class="code-keyword">var</span> data = <span class="code-keyword">await</span> FetchDataAsync();  <span class="code-comment">// If throws, caught below</span>
-        <span class="code-keyword">await</span> ProcessDataAsync(data);
-    }
-    <span class="code-keyword">catch</span> (<span class="code-type">HttpRequestException</span> ex)
-    {
-        _logger.LogError(ex, <span class="code-string">"HTTP request failed"</span>);
-        <span class="code-keyword">throw</span>;  <span class="code-comment">// Re-throw to propagate</span>
-    }
-}</div>
-            
-            <div class="hint" style="margin-top: 2vh;">
-                <strong>💡 Pattern:</strong> Always await or explicitly handle exceptions inside the async method.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Exception Handling: Multiple Tasks</h2>
-            
-            <h3>What Happens with Task.WhenAll?</h3>
-            <p>If any task fails, <code>Task.WhenAll</code> throws an <code>AggregateException</code> containing all inner exceptions.</p>
-            
-            <div class="code-block"><span class="code-keyword">try</span>
-{
-    <span class="code-keyword">var</span> tasks = <span class="code-keyword">new</span>[] {
-        Task1Async(),
-        Task2Async(),
-        Task3Async()
-    };
-    
-    <span class="code-keyword">await</span> <span class="code-type">Task</span>.WhenAll(tasks);
-}
-<span class="code-keyword">catch</span> (<span class="code-type">Exception</span> ex)  <span class="code-comment">// First exception</span>
-{
-    _logger.LogError(ex, <span class="code-string">"At least one task failed"</span>);
-}</div>
-            
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>ℹ️ Note:</strong> When you await Task.WhenAll, only the first exception is thrown. Access task.Exception to see all exceptions.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>CancellationToken: The Why</h2>
-            
-            <h3>Rationale</h3>
-            <p>Allows external code (user cancellation, server timeout) to stop long-running work early. Saves CPU/DB resources.</p>
-            
-            <h3 style="margin-top: 2vh;">Use Cases</h3>
-            <p>• User closes browser tab or navigates away</p>
-            <p>• Request timeout (HttpClient timeout)</p>
-            <p>• Application shutdown (hosted service stopping)</p>
-            <p>• Batch operation timeout</p>
-            
-            <div class="hint" style="margin-top: 2vh;">
-                <strong>💡 Hint:</strong> Use <code>CancellationToken.ThrowIfCancellationRequested()</code> in loops to check cancellation frequently.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>CancellationToken: Implementation</h2>
-            
-            <h3>How to Pass the Token Down the Stack</h3>
-            
-            <div class="code-block"><span class="code-comment">// Controller</span>
-[<span class="code-type">HttpGet</span>]
-<span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">IActionResult</span>&gt; GetUser(<span class="code-keyword">int</span> id, <span class="code-type">CancellationToken</span> ct)
-{
-    <span class="code-keyword">var</span> user = <span class="code-keyword">await</span> _service.GetUserAsync(id, ct);
-    <span class="code-keyword">return</span> Ok(user);
-}
-
-<span class="code-comment">// Service</span>
-<span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">User</span>&gt; GetUserAsync(<span class="code-keyword">int</span> id, <span class="code-type">CancellationToken</span> ct)
-{
-    <span class="code-keyword">var</span> response = <span class="code-keyword">await</span> httpClient.GetAsync(url, ct);
-    <span class="code-keyword">return await</span> response.Content.ReadAsAsync&lt;<span class="code-type">User</span>&gt;(ct);
-}</div>
-            
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>ℹ️ ASP.NET Core automatically provides a CancellationToken for requests that's triggered when client disconnects.</strong>
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>async void: The Event Handler Exception</h2>
-            
-            <h3>The Rule</h3>
-            <p><strong>ONLY</strong> use async void for event handlers (UI framework requirement). MUST include error handling inside the method body.</p>
-            
-            <div class="code-block"><span class="code-comment">// ✅ OK - Event handler (async void required)</span>
-<span class="code-keyword">private async void</span> OnButtonClick(<span class="code-keyword">object</span> sender, <span class="code-type">EventArgs</span> e)
-{
-    <span class="code-keyword">try</span>
-    {
-        <span class="code-keyword">await</span> ProcessDataAsync();
-    }
-    <span class="code-keyword">catch</span> (<span class="code-type">Exception</span> ex)
-    {
-        _logger.LogError(ex, <span class="code-string">"Button click failed"</span>);
-        MessageBox.Show($<span class="code-string">"Error: {ex.Message}"</span>);
-    }
-}</div>
-            
-            <div class="warning" style="margin-top: 1.5vh;">
-                <strong>⚠️ Warning:</strong> In async void, exceptions are thrown on the SynchronizationContext and can crash the app if unhandled.
-            </div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why async void is dangerous:</strong> With Task-returning methods, exceptions are captured in the Task. With async void, there's no Task to capture exceptions—they're rethrown on the SynchronizationContext, potentially crashing your app.
-            </div>
-            
-            <h3 style="margin-top: 1.5vh;">Why Event Handlers Must Be Void</h3>
-            <p>Event handler delegates are defined as <code>void</code> (not Task). The framework doesn't await event handlers, so they must be fire-and-forget by design. This is why async void exists.</p>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming" target="_blank">Async/Await Best Practices - Stephen Cleary</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Synchronous Code Calling Async Code</h2>
-            
-            <h3>A Necessary Evil Sometimes</h3>
-            <p>Sometimes you're forced to call async from sync (e.g., a synchronous interface).</p>
-            
-            <div class="code-block"><span class="code-comment">// ❌ BAD (but sometimes necessary)</span>
-<span class="code-keyword">public void</span> SyncMethod()
-{
-    <span class="code-keyword">var</span> result = MyAsyncMethod().GetAwaiter().GetResult();
-}
-
-<span class="code-comment">// ✅ BETTER (for console apps, not UI/ASP.NET)</span>
-<span class="code-keyword">public void</span> SyncMethod()
-{
-    <span class="code-type">Task</span>.Run(() => MyAsyncMethod()).GetAwaiter().GetResult();
-}</div>
-            
-            <div class="warning" style="margin-top: 2vh;">
-                <strong>⚠️ Best Practice:</strong> Redesign to avoid this entirely. If unavoidable, understand the deadlock risks for your platform.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Task.WhenAll: Parallel I/O</h2>
-            
-            <h3>How to Start Multiple I/O Operations Concurrently</h3>
-            
-            <div class="code-block"><span class="code-comment">// Fetch 3 users concurrently (parallel I/O)</span>
-<span class="code-keyword">var</span> user1Task = GetUserAsync(<span class="code-number">1</span>);
-<span class="code-keyword">var</span> user2Task = GetUserAsync(<span class="code-number">2</span>);
-<span class="code-keyword">var</span> user3Task = GetUserAsync(<span class="code-number">3</span>);
-
-<span class="code-comment">// Wait for ALL to complete</span>
-<span class="code-keyword">var</span> users = <span class="code-keyword">await</span> <span class="code-type">Task</span>.WhenAll(user1Task, user2Task, user3Task);
-
-<span class="code-comment">// users is User[] with 3 results</span></div>
-            
-            <div class="info-box" style="margin-top: 1.5vh;">
-                <strong>✅ Result:</strong> All 3 requests happen in parallel. Total time = slowest request, not sum of all requests.
-            </div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why use WhenAll:</strong> Starting all tasks before awaiting them allows them to run concurrently. If you await in a loop, they run sequentially. WhenAll = parallel I/O without blocking threads.
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task.whenall" target="_blank">Task.WhenAll Method</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Task.WhenAny: Race Conditions & Timeouts</h2>
-            
-            <h3>Wait for the First Task to Complete</h3>
-            
-            <div class="code-block"><span class="code-comment">// Timeout pattern with Task.WhenAny</span>
-<span class="code-keyword">var</span> delayTask = <span class="code-type">Task</span>.Delay(TimeSpan.FromSeconds(<span class="code-number">5</span>));
-<span class="code-keyword">var</span> requestTask = httpClient.GetAsync(url);
-
-<span class="code-keyword">var</span> first = <span class="code-keyword">await</span> <span class="code-type">Task</span>.WhenAny(requestTask, delayTask);
-
-<span class="code-keyword">if</span> (first == delayTask)
-    <span class="code-keyword">throw new</span> <span class="code-type">TimeoutException</span>(<span class="code-string">"Request timed out"</span>);
-
-<span class="code-keyword">return await</span> requestTask;</div>
-            
-            <div class="hint" style="margin-top: 1.5vh;">
-                <strong>💡 Use Cases:</strong> Timeouts, redundant API calls (first-one-wins), race conditions.
-            </div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why use WhenAny:</strong> Allows you to implement timeout patterns, try multiple sources and use whichever responds first, or implement cancellation with Task.Delay as a backup.
-            </div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task.whenany" target="_blank">Task.WhenAny Method</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Task.Run: The CPU-Bound Tool</h2>
-            
-            <h3>When to Use It</h3>
-            <p>Offload heavy, synchronous computation from the current thread to the thread pool.</p>
-            
-            <div class="code-block"><span class="code-comment">// ✅ CORRECT - CPU-bound work</span>
-<span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">byte</span>[]&gt; ProcessImageAsync(<span class="code-keyword">byte</span>[] imageData)
-{
-    <span class="code-comment">// Run heavy computation on thread pool thread</span>
-    <span class="code-keyword">var</span> result = <span class="code-keyword">await</span> <span class="code-type">Task</span>.Run(() => ApplyFilters(imageData));
-    <span class="code-keyword">return</span> result;
-}</div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why only for CPU-bound:</strong> Task.Run queues work to the ThreadPool. For I/O operations, this wastes a thread that just sits idle waiting. I/O has its own async mechanisms (IOCP) that don't need threads.
-            </div>
-            
-            <div class="warning" style="margin-top: 1.5vh;">
-                <strong>⚠️ Rule:</strong> Use Task.Run only for CPU-bound work that would otherwise block the current thread.
-            </div>
-            
-            <h3 style="margin-top: 1.5vh;">When NOT to Use It</h3>
-            <p><strong>Alternative for UI responsiveness:</strong> In WPF/WinForms, use Task.Run to keep UI thread responsive during heavy computation. In ASP.NET Core, usually not needed.</p>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task.run" target="_blank">Task.Run Method</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Task.Run Anti-Patterns</h2>
-            
-            <h3>Anti-Pattern 1: Wrapping I/O</h3>
-            
-            <div class="code-block"><span class="code-comment">// ❌ WRONG - Wastes thread pool thread on I/O</span>
-<span class="code-keyword">var</span> data = <span class="code-keyword">await</span> <span class="code-type">Task</span>.Run(() => httpClient.GetAsync(url));
-
-<span class="code-comment">// ✅ CORRECT - Use native async</span>
-<span class="code-keyword">var</span> data = <span class="code-keyword">await</span> httpClient.GetAsync(url);</div>
-            
-            <h3 style="margin-top: 2vh;">Anti-Pattern 2: Wrapping .Result</h3>
-            
-            <div class="code-block"><span class="code-comment">// ❌ WRONG - Defeats the purpose</span>
-<span class="code-keyword">var</span> user = <span class="code-keyword">await</span> <span class="code-type">Task</span>.Run(() => GetUserAsync(id).Result);
-
-<span class="code-comment">// ✅ CORRECT - Just await directly</span>
-<span class="code-keyword">var</span> user = <span class="code-keyword">await</span> GetUserAsync(id);</div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Parallelism APIs: Parallel.For & ForEach</h2>
-            
-            <h3>When to Use: CPU-Bound Batch Processing</h3>
-            
-            <div class="code-block"><span class="code-comment">// Process 10,000 items in parallel</span>
-<span class="code-keyword">var</span> items = GetItems();  <span class="code-comment">// 10,000 items</span>
-<span class="code-keyword">var</span> results = <span class="code-keyword">new</span> ConcurrentBag&lt;<span class="code-type">Result</span>&gt;();
-
-Parallel.ForEach(items, item =>
-{
-    <span class="code-keyword">var</span> result = ExpensiveComputation(item);
-    results.Add(result);  <span class="code-comment">// Thread-safe collection</span>
-});</div>
-            
-            <div class="warning" style="margin-top: 1.5vh;">
-                <strong>⚠️ Important:</strong> Parallel.ForEach blocks the calling thread. Not suitable for async I/O.
-            </div>
-            
-            <div class="why-section" style="margin-top: 1.5vh;">
-                <strong>🎯 Why not for async I/O:</strong> Parallel.ForEach expects <strong>synchronous</strong> work. It blocks threads waiting for each iteration. For async I/O, use <code>Task.WhenAll</code> with <code>Select</code> instead - it starts all operations concurrently without blocking threads.
-            </div>
-            
-            <h3 style="margin-top: 1.5vh;">Alternative for Async I/O</h3>
-            <div class="code-block"><span class="code-comment">// ✅ CORRECT for async I/O: Use Task.WhenAll</span>
-<span class="code-keyword">var</span> tasks = urls.Select(url => httpClient.GetAsync(url));
-<span class="code-keyword">await</span> <span class="code-type">Task</span>.WhenAll(tasks);  <span class="code-comment">// Parallel I/O, no blocking</span>
-
-<span class="code-comment">// With concurrency limit using SemaphoreSlim</span>
-<span class="code-keyword">await</span> <span class="code-type">Task</span>.WhenAll(urls.Select(<span class="code-keyword">async</span> url => {
-    <span class="code-keyword">await</span> semaphore.WaitAsync();
-    <span class="code-keyword">try</span> { <span class="code-keyword">return await</span> httpClient.GetAsync(url); }
-    <span class="code-keyword">finally</span> { semaphore.Release(); }
-}));</div>
-            
-            <p class="reference">📘 <a href="https://docs.microsoft.com/dotnet/standard/parallel-programming/task-parallel-library-tpl" target="_blank">Task Parallel Library (TPL)</a></p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>PLINQ: Parallel LINQ</h2>
-            
-            <h3>How to Use .AsParallel()</h3>
-            
-            <div class="code-block"><span class="code-comment">// Process data in parallel using LINQ</span>
-<span class="code-keyword">var</span> results = items
-    .AsParallel()
-    .Where(item => item.IsValid)
-    .Select(item => ExpensiveComputation(item))
-    .ToList();</div>
-            
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>ℹ️ Benefit:</strong> Declarative, easy to use, automatically distributes work across cores.
-            </div>
-            
-            <h3 style="margin-top: 2vh;">Use For</h3>
-            <p>• CPU-intensive LINQ queries</p>
-            <p>• Data transformation pipelines</p>
-            <p>• Batch processing</p>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Controlling Concurrency: SemaphoreSlim</h2>
-            
-            <h3>Rationale</h3>
-            <p>Limiting the maximum number of concurrent operations (e.g., API calls, DB connections).</p>
-            
-            <h3 style="margin-top: 1.5vh;">The Problem</h3>
-            <p>Firing off 1000 concurrent HTTP requests exhausts connection pools, memory, or hits rate limits.</p>
-            
-            <div class="hint" style="margin-top: 2vh;">
-                <strong>💡 Protects:</strong> Downstream resources from overload by limiting concurrency.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>SemaphoreSlim.WaitAsync</h2>
-            
-            <h3>The Correct, Non-Blocking Way</h3>
-            
-            <div class="code-block"><span class="code-keyword">private static</span> <span class="code-type">SemaphoreSlim</span> _semaphore = <span class="code-keyword">new</span>(<span class="code-number">3</span>);  <span class="code-comment">// Max 3 concurrent</span>
-
-<span class="code-keyword">public async</span> <span class="code-type">Task</span>&lt;<span class="code-type">Response</span>&gt; FetchAsync(<span class="code-keyword">string</span> url)
-{
-    <span class="code-keyword">await</span> _semaphore.WaitAsync();  <span class="code-comment">// Acquire permit</span>
-    <span class="code-keyword">try</span>
-    {
-        <span class="code-keyword">return await</span> httpClient.GetAsync(url);
-    }
-    <span class="code-keyword">finally</span>
-    {
-        _semaphore.Release();  <span class="code-comment">// MUST release in finally</span>
-    }
-}</div>
-            
-            <div class="warning" style="margin-top: 2vh;">
-                <strong>⚠️ Important:</strong> Use WaitAsync() (async), NOT .Wait() (blocks).
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>IAsyncEnumerable<T>: Streaming Data</h2>
-            
-            <h3>The Problem with Task&lt;List&lt;T&gt;&gt;</h3>
-            <p>Buffers ALL results in memory before returning. Wasteful for large datasets.</p>
-            
-            <h3 style="margin-top: 2vh;">The Solution: IAsyncEnumerable&lt;T&gt;</h3>
-            
-            <div class="code-block"><span class="code-comment">// ✅ Streams results, no buffering</span>
-<span class="code-keyword">public async</span> <span class="code-type">IAsyncEnumerable</span>&lt;<span class="code-type">User</span>&gt; GetAllUsersAsync()
-{
-    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">1</span>; i &lt;= <span class="code-number">10000</span>; i++)
-    {
-        <span class="code-keyword">var</span> user = <span class="code-keyword">await</span> FetchUserAsync(i);
-        <span class="code-keyword">yield return</span> user;  <span class="code-comment">// One at a time</span>
-    }
-}</div>
-            
-            <div class="hint" style="margin-top: 2vh;">
-                <strong>💡 Benefit:</strong> Memory-efficient for large or streaming results.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Using IAsyncEnumerable<T></h2>
-            
-            <h3>Consumer Side: await foreach</h3>
-            
-            <div class="code-block"><span class="code-comment">// Consume with await foreach</span>
-<span class="code-keyword">await foreach</span> (<span class="code-keyword">var</span> user <span class="code-keyword">in</span> GetAllUsersAsync())
-{
-    Console.WriteLine(user.Name);  <span class="code-comment">// Processes as they arrive</span>
-    <span class="code-keyword">await</span> _db.SaveAsync(user);
-}</div>
-            
-            <h3 style="margin-top: 2vh;">ASP.NET Core Use</h3>
-            <p>Return <code>IAsyncEnumerable&lt;T&gt;</code> from controllers to stream results directly to the client.</p>
-            
-            <div class="code-block">[<span class="code-type">HttpGet</span>]
-<span class="code-keyword">public async</span> <span class="code-type">IAsyncEnumerable</span>&lt;<span class="code-type">User</span>&gt; StreamUsers()
-{
-    <span class="code-keyword">await foreach</span> (<span class="code-keyword">var</span> user <span class="code-keyword">in</span> _repo.GetAllUsersAsync())
-    {
-        <span class="code-keyword">yield return</span> user;
-    }
-}</div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>ASP.NET Core vs. UI Context Summary</h2>
-            
-            <h3>Recap: Context Behavior</h3>
-            
-            <table class="table">
-                <tr>
-                    <th></th>
-                    <th>Server (ASP.NET Core)</th>
-                    <th>UI (WPF/WinForms)</th>
-                </tr>
-                <tr>
-                    <td><strong>SyncContext</strong></td>
-                    <td>null (none)</td>
-                    <td>UI thread context</td>
-                </tr>
-                <tr>
-                    <td><strong>Deadlock Risk</strong></td>
-                    <td>Low (no context)</td>
-                    <td>High (single thread)</td>
-                </tr>
-                <tr>
-                    <td><strong>ConfigureAwait</strong></td>
-                    <td>Optional (good practice)</td>
-                    <td>Essential in libraries</td>
-                </tr>
-                <tr>
-                    <td><strong>Async Benefits</strong></td>
-                    <td>Scalability (handle more requests)</td>
-                    <td>Responsiveness (UI doesn't freeze)</td>
-                </tr>
-            </table>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Testing Async Code</h2>
-            
-            <h3>Best Practices</h3>
-            <p>Always test the Task (await the SUT call in the test method).</p>
-            
-            <div class="code-block"><span class="code-keyword">public class</span> <span class="code-type">UserServiceTests</span>
-{
-    [<span class="code-type">Fact</span>]
-    <span class="code-keyword">public async</span> <span class="code-type">Task</span> GetUser_ReturnsUser_WhenExists()
-    {
-        <span class="code-comment">// Arrange</span>
-        <span class="code-keyword">var</span> service = <span class="code-keyword">new</span> <span class="code-type">UserService</span>(_mockRepo.Object);
-        
-        <span class="code-comment">// Act</span>
-        <span class="code-keyword">var</span> user = <span class="code-keyword">await</span> service.GetUserAsync(<span class="code-number">1</span>);
-        
-        <span class="code-comment">// Assert</span>
-        Assert.NotNull(user);
-    }
-    
-    [<span class="code-type">Fact</span>]
-    <span class="code-keyword">public async</span> <span class="code-type">Task</span> GetUser_ThrowsException_WhenNotFound()
-    {
-        <span class="code-keyword">await</span> Assert.ThrowsAsync&lt;<span class="code-type">NotFoundException</span>&gt;(
-            () => service.GetUserAsync(<span class="code-number">999</span>)
-        );
-    }
-}</div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>The Best Practices Checklist (Review)</h2>
-            
-            <h3>7 Golden Rules</h3>
-            <div style="font-size: clamp(13px, 1.8vh, 19px);">
-                <p>✅ <strong>1. Return Task/Task&lt;T&gt;:</strong> Never async void (except events)</p>
-                <p>✅ <strong>2. I/O vs CPU:</strong> Async for I/O, Parallel for CPU</p>
-                <p>✅ <strong>3. No Blocking:</strong> Never .Result or .Wait()</p>
-                <p>✅ <strong>4. ConfigureAwait(false):</strong> In library code</p>
-                <p>✅ <strong>5. CancellationToken:</strong> Pass through async chains</p>
-                <p>✅ <strong>6. Handle Exceptions:</strong> No fire-and-forget</p>
-                <p>✅ <strong>7. Control Concurrency:</strong> Use SemaphoreSlim when needed</p>
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide">
-        <div class="content">
-            <h2>Learning Resources & Next Steps</h2>
-            
-            <h3>📘 Essential Microsoft Documentation</h3>
-            <p style="font-size: clamp(12px, 1.6vh, 17px);">• <a href="https://docs.microsoft.com/dotnet/csharp/async" target="_blank">Asynchronous Programming – C#</a></p>
-            
-            <p style="font-size: clamp(12px, 1.6vh, 17px); margin-top: 1vh;">• <a href="https://docs.microsoft.com/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap" target="_blank">Task-based Asynchronous Pattern (TAP)</a></p>
-            
-            <p style="font-size: clamp(12px, 1.6vh, 17px); margin-top: 1vh;">• <a href="https://docs.microsoft.com/aspnet/core/fundamentals/best-practices" target="_blank">ASP.NET Core Performance Best Practices</a></p>
-            
-            <p style="font-size: clamp(12px, 1.6vh, 17px); margin-top: 1vh;">• <a href="https://docs.microsoft.com/ef/core/querying/async" target="_blank">EF Core Asynchronous Programming</a></p>
-            
-            <h3 style="margin-top: 2vh;">📚 Community Resources</h3>
-            <p style="font-size: clamp(12px, 1.6vh, 17px);">• <a href="https://blog.stephencleary.com" target="_blank">Stephen Cleary's Blog</a> - Async/Await expert</p>
-            <p style="font-size: clamp(12px, 1.6vh, 17px);">• <a href="https://devblogs.microsoft.com/dotnet/configureawait-faq" target="_blank">ConfigureAwait FAQ</a> - Stephen Toub</p>
-            
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>📚 Assignment:</strong> Convert a legacy sync component in your codebase to async. Apply the best practices learned today.
-            </div>
-        
-        </div>
-    </div>
-
-    <div class="slide title-slide">
-        <div>
-            <h1>Summary & Q&A</h1>
-            <h2>Key Takeaway</h2>
-            
-            <div style="margin-top: 4vh; font-size: clamp(18px, 2.8vh, 32px); font-weight: 700; padding: 3vh; background: rgba(255,255,255,0.1); border-radius: 15px;">
-                Async is about SCALABILITY, not speed!
-            </div>
-            
-            <div style="margin-top: 4vh; font-size: clamp(14px, 2vh, 22px); line-height: 1.8;">
-                <p>✅ Use async/await correctly</p>
-                <p>✅ Avoid blocking with .Result/.Wait()</p>
-                <p>✅ Apply ConfigureAwait(false) in libraries</p>
-                <p>✅ Pass CancellationToken through chains</p>
-                <p style="margin-top: 3vh; font-size: clamp(16px, 2.2vh, 24px);"><strong>Your applications will scale better!</strong></p>
-            </div>
-            
-            <div style="margin-top: 4vh; font-size: clamp(18px, 2.5vh, 28px); font-weight: 600;">
-                Questions?
-            </div>
-            
-            <p style="margin-top: 5vh; font-size: clamp(11px, 1.4vh, 14px); color: rgba(255,255,255,0.6); font-style: italic;">
-                🤖 Made by AI • Reviewed by Abubakr Bakhromov
-            </p>
-        
-        </div>
+    <div class="footer">
+        <p><strong>👨‍🏫 Instructor:</strong> Abubakr Bakhromov</p>
+        <p style="margin-top: 1vh;"><strong>📁 Repository:</strong> <a href="https://github.com/Abubakr0904/lab-2025-2026-vention" target="_blank">github.com/Abubakr0904/lab-2025-2026-vention</a></p>
+        <p style="margin-top: 2vh; font-size: clamp(11px, 1.4vh, 14px); font-style: italic;">
+            🤖 Made by AI • Reviewed by Abubakr Bakhromov
+        </p>
     </div>
 </div>
-
-<div class="controls">
-    <button id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
-    <span class="slide-counter">Slide <span id="currentSlide">1</span></span>
-    <button id="nextBtn" onclick="changeSlide(1)">Next →</button>
-</div>
-
-<div class="jump-controls">
-    <input type="number" id="slideInput" min="1" max="50" placeholder="Go to..." 
-           style="width: 70px; padding: 0.8vh 0.8vw; border: none; border-radius: 20px; text-align: center; font-size: clamp(11px, 1.5vh, 15px);"
-           onkeypress="if(event.key==='Enter') goToSlide()">
-    <button onclick="goToSlide()" style="padding: 0.8vh 1.2vw; margin-left: 0.5vw;">Go</button>
-</div>
-
-<script>
-let currentSlide = 1;
-const totalSlides = 50;
-
-function showSlide(n) {
-    const slides = document.querySelectorAll('.slide');
-    if (n > totalSlides) currentSlide = totalSlides;
-    if (n < 1) currentSlide = 1;
-    
-    slides.forEach(slide => slide.classList.remove('active'));
-    slides[currentSlide - 1].classList.add('active');
-    
-    document.getElementById('currentSlide').textContent = currentSlide;
-    document.getElementById('prevBtn').disabled = currentSlide === 1;
-    document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
-}
-
-function changeSlide(n) {
-    currentSlide += n;
-    showSlide(currentSlide);
-}
-
-function goToSlide() {
-    const input = document.getElementById('slideInput');
-    const slideNum = parseInt(input.value);
-    
-    if (slideNum >= 1 && slideNum <= totalSlides) {
-        currentSlide = slideNum;
-        showSlide(currentSlide);
-        input.value = '';
-    } else {
-        alert(`Please enter a slide number between 1 and ${totalSlides}`);
-    }
-}
-
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') changeSlide(-1);
-    if (e.key === 'ArrowRight') changeSlide(1);
-});
-
-showSlide(currentSlide);
-</script>
 </body>
 </html>
