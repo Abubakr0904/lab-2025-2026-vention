@@ -6,8 +6,14 @@ function initPresentation(totalSlides) {
 
     window.showSlide = function(n) {
         const slides = document.querySelectorAll('.slide');
-        if (n > totalSlides) currentSlide = totalSlides;
-        if (n < 1) currentSlide = 1;
+        currentSlide = n;  // Update currentSlide with the passed value
+        if (currentSlide > totalSlides) currentSlide = totalSlides;
+        if (currentSlide < 1) currentSlide = 1;
+        
+        if (currentSlide > slides.length) {
+            console.error(`Trying to show slide ${currentSlide} but only ${slides.length} slides found in DOM`);
+            currentSlide = slides.length;
+        }
         
         slides.forEach(slide => slide.classList.remove('active'));
         slides[currentSlide - 1].classList.add('active');
