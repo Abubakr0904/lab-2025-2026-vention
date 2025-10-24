@@ -1007,14 +1007,37 @@ ConnectionStrings__Default=Server=prod-db
                 <strong>ℹ️ Best Practice:</strong> Group related settings under named sections (<code>MySettings</code>, <code>ConnectionStrings</code>).
             </div>
         </div>
-    <!-- Slide 34: appsettings.Development.json -->
+        <!-- Slide 34: appsettings.Development.json -->
     <div class="slide">
         <div class="content">
             <h2>appsettings.Development.json</h2>
-            <h3>Content Overview</h3>
-            <p>Environment-specific overrides demo</p>
+            
+            <h3>Environment-Specific Overrides</h3>
+            <p>Create environment-specific configuration files that override base settings.</p>
+
+            <div class="code-block" style="margin-top: 2vh;"><span class="code-comment">// appsettings.Development.json</span>
+{
+  <span class="code-string">"Logging"</span>: {
+    <span class="code-string">"LogLevel"</span>: {
+      <span class="code-string">"Default"</span>: <span class="code-string">"Debug"</span>,  <span class="code-comment">// More verbose in dev</span>
+      <span class="code-string">"Microsoft"</span>: <span class="code-string">"Information"</span>
+    }
+  },
+  <span class="code-string">"ConnectionStrings"</span>: {
+    <span class="code-string">"DefaultConnection"</span>: <span class="code-string">"Server=localhost;Database=MyApp_Dev"</span>
+  },
+  <span class="code-string">"MySettings"</span>: {
+    <span class="code-string">"ApiKey"</span>: <span class="code-string">"dev-key-12345"</span>,
+    <span class="code-string">"EnableDetailedErrors"</span>: <span class="code-keyword">true</span>
+  }
+}</div>
+
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers appsettings.development.json in detail with code examples and best practices.
+                <strong>ℹ️ Automatic Loading:</strong> ASP.NET Core automatically loads the environment-specific file based on <code>ASPNETCORE_ENVIRONMENT</code> variable.
+            </div>
+
+            <div class="hint" style="margin-top: 1.5vh;">
+                <strong>💡 Environments:</strong> Common values are Development, Staging, Production. Create appsettings.{Environment}.json for each.
             </div>
         </div>
     </div>
@@ -1023,11 +1046,31 @@ ConnectionStrings__Default=Server=prod-db
     <div class="slide">
         <div class="content">
             <h2>Loading Configurations</h2>
-            <h3>Content Overview</h3>
-            <p>Explicit configuration setup code</p>
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers loading configurations in detail with code examples and best practices.
+            
+            <h3>Explicit Configuration Setup</h3>
+
+            <div class="code-block"><span class="code-keyword">var</span> builder = <span class="code-type">WebApplication</span>.CreateBuilder(args);
+
+<span class="code-comment">// Default configuration chain (automatic)</span>
+<span class="code-comment">// 1. appsettings.json</span>
+<span class="code-comment">// 2. appsettings.{Environment}.json</span>
+<span class="code-comment">// 3. User Secrets (if Development)</span>
+<span class="code-comment">// 4. Environment Variables</span>
+<span class="code-comment">// 5. Command-line Arguments</span>
+
+<span class="code-comment">// Manual configuration (if needed)</span>
+builder.Configuration
+    .AddJsonFile(<span class="code-string">"appsettings.json"</span>, optional: <span class="code-keyword">false</span>, reloadOnChange: <span class="code-keyword">true</span>)
+    .AddJsonFile($<span class="code-string">"appsettings.{builder.Environment.EnvironmentName}.json"</span>, 
+        optional: <span class="code-keyword">true</span>, reloadOnChange: <span class="code-keyword">true</span>)
+    .AddEnvironmentVariables()
+    .AddCommandLine(args);</div>
+
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 reloadOnChange:</strong> Configuration automatically reloads when files change (useful for feature flags).
             </div>
+            
+            <p class="reference">📘 <a href="https://docs.microsoft.com/aspnet/core/fundamentals/configuration/" target="_blank">Configuration in ASP.NET Core</a></p>
         </div>
     </div>
 
@@ -1035,11 +1078,27 @@ ConnectionStrings__Default=Server=prod-db
     <div class="slide">
         <div class="content">
             <h2>Strongly Typed Configuration</h2>
-            <h3>Content Overview</h3>
-            <p>IOptions<T> pattern explanation</p>
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers strongly typed configuration in detail with code examples and best practices.
+            
+            <h3>IOptions&lt;T&gt; Pattern</h3>
+            <p>Bind configuration sections to strongly-typed POCOs for type safety and IntelliSense.</p>
+
+            <div class="code-block"><span class="code-comment">// 1. Define a settings class</span>
+<span class="code-keyword">public class</span> <span class="code-type">MySettings</span>
+{
+    <span class="code-keyword">public</span> <span class="code-keyword">string</span> ApiKey { <span class="code-keyword">get</span>; <span class="code-keyword">set</span>; }
+    <span class="code-keyword">public</span> <span class="code-keyword">int</span> MaxRetries { <span class="code-keyword">get</span>; <span class="code-keyword">set</span>; }
+    <span class="code-keyword">public</span> <span class="code-keyword">int</span> TimeoutSeconds { <span class="code-keyword">get</span>; <span class="code-keyword">set</span>; }
+}
+
+<span class="code-comment">// 2. Register in DI container</span>
+builder.Services.Configure&lt;<span class="code-type">MySettings</span>&gt;(
+    builder.Configuration.GetSection(<span class="code-string">"MySettings"</span>));</div>
+
+            <div class="why-section" style="margin-top: 2vh;">
+                <strong>🎯 Why Strongly Typed:</strong> Compile-time checking, IntelliSense, refactoring support, and validation at startup.
             </div>
+
+            <p class="reference">📘 <a href="https://docs.microsoft.com/aspnet/core/fundamentals/configuration/options" target="_blank">Options Pattern</a></p>
         </div>
     </div>
 
@@ -1047,10 +1106,36 @@ ConnectionStrings__Default=Server=prod-db
     <div class="slide">
         <div class="content">
             <h2>Accessing Config in Code</h2>
-            <h3>Content Overview</h3>
-            <p>Using IOptions in services</p>
+            
+            <h3>Using IOptions&lt;T&gt;</h3>
+
+            <div class="code-block"><span class="code-keyword">public class</span> <span class="code-type">MyService</span>
+{
+    <span class="code-keyword">private readonly</span> <span class="code-type">MySettings</span> _settings;
+    <span class="code-keyword">private readonly</span> <span class="code-type">ILogger</span>&lt;<span class="code-type">MyService</span>&gt; _logger;
+    
+    <span class="code-keyword">public</span> MyService(<span class="code-type">IOptions</span>&lt;<span class="code-type">MySettings</span>&gt; options, 
+        <span class="code-type">ILogger</span>&lt;<span class="code-type">MyService</span>&gt; logger)
+    {
+        _settings = options.Value;  <span class="code-comment">// Extract value</span>
+        _logger = logger;
+    }
+    
+    <span class="code-keyword">public async</span> <span class="code-type">Task</span> CallApiAsync()
+    {
+        _logger.LogInformation(<span class="code-string">"Calling API with timeout {Timeout}s"</span>, 
+            _settings.TimeoutSeconds);
+        
+        <span class="code-keyword">var</span> client = <span class="code-keyword">new</span> <span class="code-type">HttpClient</span> { 
+            Timeout = <span class="code-type">TimeSpan</span>.FromSeconds(_settings.TimeoutSeconds) 
+        };
+        
+        <span class="code-comment">// Use _settings.MaxRetries, etc.</span>
+    }
+}</div>
+
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers accessing config in code in detail with code examples and best practices.
+                <strong>ℹ️ IOptionsSnapshot:</strong> Use for reloadable config. <code>IOptions</code> is singleton, <code>IOptionsSnapshot</code> is scoped.
             </div>
         </div>
     </div>
@@ -1059,10 +1144,26 @@ ConnectionStrings__Default=Server=prod-db
     <div class="slide">
         <div class="content">
             <h2>Environment Variables</h2>
-            <h3>Content Overview</h3>
-            <p>Docker and Kubernetes config</p>
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers environment variables in detail with code examples and best practices.
+            
+            <h3>Best for Secrets and Containers</h3>
+            <p>Environment variables are perfect for containerized deployments (Docker, Kubernetes) and CI/CD pipelines.</p>
+
+            <h3 style="margin-top: 2vh;">Syntax</h3>
+            <div class="code-block"><span class="code-comment">// Windows (PowerShell)</span>
+$env:ConnectionStrings__DefaultConnection=<span class="code-string">"Server=prod;Database=MyApp"</span>
+$env:MySettings__ApiKey=<span class="code-string">"prod-key-xyz"</span>
+
+<span class="code-comment">// Linux/macOS</span>
+<span class="code-keyword">export</span> ConnectionStrings__DefaultConnection=<span class="code-string">"Server=prod;Database=MyApp"</span>
+<span class="code-keyword">export</span> MySettings__ApiKey=<span class="code-string">"prod-key-xyz"</span>
+
+<span class="code-comment">// Docker Compose</span>
+environment:
+  - ConnectionStrings__DefaultConnection=Server=prod;Database=MyApp
+  - MySettings__ApiKey=prod-key-xyz</div>
+
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Key Format:</strong> Use double underscore <code>__</code> to represent nested configuration (colon <code>:</code> doesn't work in all environments).
             </div>
         </div>
     </div>
@@ -1071,11 +1172,38 @@ ConnectionStrings__Default=Server=prod-db
     <div class="slide">
         <div class="content">
             <h2>Secret Management</h2>
-            <h3>Content Overview</h3>
-            <p>Never commit secrets</p>
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers secret management in detail with code examples and best practices.
+            
+            <h3>Never Commit Secrets to Git</h3>
+
+            <div class="warning" style="margin-top: 2vh;">
+                <strong>⚠️ Critical Rule:</strong> Never commit passwords, API keys, connection strings, or tokens to source control.
             </div>
+
+            <h3 style="margin-top: 2vh;">Solutions by Environment</h3>
+            <table class="table" style="margin-top: 1.5vh;">
+                <tr>
+                    <th style="width: 30%;">Environment</th>
+                    <th style="width: 70%;">Solution</th>
+                </tr>
+                <tr>
+                    <td><strong>Development</strong></td>
+                    <td>User Secrets (local machine)</td>
+                </tr>
+                <tr>
+                    <td><strong>Staging/Production</strong></td>
+                    <td>Azure Key Vault, AWS Secrets Manager, HashiCorp Vault</td>
+                </tr>
+                <tr>
+                    <td><strong>CI/CD</strong></td>
+                    <td>Pipeline variables (GitHub Secrets, Azure DevOps Variables)</td>
+                </tr>
+            </table>
+
+            <div class="info-box" style="margin-top: 2vh;">
+                <strong>✅ Best Practice:</strong> Use different secrets for each environment. If dev secrets leak, production is still safe.
+            </div>
+            
+            <p class="reference">📘 <a href="https://docs.microsoft.com/aspnet/core/security/app-secrets" target="_blank">Safe Storage of Secrets</a></p>
         </div>
     </div>
 
@@ -1083,10 +1211,34 @@ ConnectionStrings__Default=Server=prod-db
     <div class="slide">
         <div class="content">
             <h2>Example: User Secrets</h2>
-            <h3>Content Overview</h3>
-            <p>dotnet user-secrets commands</p>
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers example: user secrets in detail with code examples and best practices.
+            
+            <h3>Local Development Secrets</h3>
+            <p>User Secrets store sensitive data outside your project directory, never committed to Git.</p>
+
+            <div class="code-block"><span class="code-comment">// Initialize user secrets</span>
+dotnet user-secrets init
+
+<span class="code-comment">// Set a secret</span>
+dotnet user-secrets <span class="code-keyword">set</span> <span class="code-string">"ConnectionStrings:DefaultConnection"</span> \
+  <span class="code-string">"Server=localhost;Database=MyApp;..."</span>
+
+dotnet user-secrets <span class="code-keyword">set</span> <span class="code-string">"MySettings:ApiKey"</span> <span class="code-string">"dev-secret-key-123"</span>
+
+<span class="code-comment">// List all secrets</span>
+dotnet user-secrets list
+
+<span class="code-comment">// Remove a secret</span>
+dotnet user-secrets remove <span class="code-string">"MySettings:ApiKey"</span>
+
+<span class="code-comment">// Clear all secrets</span>
+dotnet user-secrets clear</div>
+
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Storage Location:</strong>
+                <ul style="margin-top: 1vh;">
+                    <li>Windows: <code>%APPDATA%\Microsoft\UserSecrets\&lt;id&gt;\secrets.json</code></li>
+                    <li>Linux/macOS: <code>~/.microsoft/usersecrets/&lt;id&gt;/secrets.json</code></li>
+                </ul>
             </div>
         </div>
     </div>
@@ -1095,11 +1247,26 @@ ConnectionStrings__Default=Server=prod-db
     <div class="slide">
         <div class="content">
             <h2>Reloadable Configurations</h2>
-            <h3>Content Overview</h3>
-            <p>Dynamic config changes</p>
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers reloadable configurations in detail with code examples and best practices.
+            
+            <h3>Dynamic Configuration Changes</h3>
+            <p>Enable <code>reloadOnChange: true</code> to automatically reload configuration when files change.</p>
+            <div class="code-block" style="margin-top: 1.5vh;">builder.Configuration
+    .AddJsonFile(<span class="code-string">"appsettings.json"</span>, reloadOnChange: <span class="code-keyword">true</span>);
+
+<span class="code-comment">// Use IOptionsSnapshot for reloadable options</span>
+<span class="code-keyword">public class</span> <span class="code-type">MyService</span>
+{
+    <span class="code-keyword">private readonly</span> <span class="code-type">IOptionsSnapshot</span>&lt;<span class="code-type">MySettings</span>&gt; _options;
+    
+    <span class="code-keyword">public void</span> DoWork()
+    {
+        <span class="code-keyword">var</span> current = _options.Value;  <span class="code-comment">// Gets latest config</span>
+    }
+}</div>
+            <div class="why-section" style="margin-top: 2vh;">
+                <strong>🎯 Use Case:</strong> Feature flags, logging levels, rate limits – change without redeploying.
             </div>
+    
         </div>
     </div>
 
@@ -1107,11 +1274,19 @@ ConnectionStrings__Default=Server=prod-db
     <div class="slide">
         <div class="content">
             <h2>Security Best Practices for Configs</h2>
-            <h3>Content Overview</h3>
-            <p>Encryption and rotation</p>
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers security best practices for configs in detail with code examples and best practices.
+            
+            <h3>Essential Security Rules</h3>
+            <ul style="margin-top: 2vh;">
+                <li><strong>Never Commit Secrets:</strong> Add sensitive files to .gitignore</li>
+                <li><strong>Principle of Least Privilege:</strong> Apps access only needed secrets</li>
+                <li><strong>Rotate Secrets Regularly:</strong> Change keys every 90 days</li>
+                <li><strong>Encrypt at Rest:</strong> Use Key Vault for production</li>
+                <li><strong>Audit Access:</strong> Log who accesses secrets</li>
+            </ul>
+            <div class="warning" style="margin-top: 2vh;">
+                <strong>⚠️ Common Mistake:</strong> Checking in appsettings.Production.json with production secrets.
             </div>
+    
         </div>
     </div>
 
@@ -1119,682 +1294,1367 @@ ConnectionStrings__Default=Server=prod-db
     <div class="slide">
         <div class="content">
             <h2>Centralized Configuration</h2>
-            <h3>Content Overview</h3>
-            <p>Azure App Config, Consul</p>
+            
+            <h3>Managing Config Across Multiple Services</h3>
+            <p>In microservices, centralized config stores enable updating all services from one place.</p>
+            <ul style="margin-top: 2vh;">
+                <li><strong>Azure App Configuration:</strong> Cloud-native with feature flags</li>
+                <li><strong>Consul:</strong> Service mesh with KV store</li>
+                <li><strong>etcd:</strong> Distributed key-value store (Kubernetes)</li>
+            </ul>
+            <div class="code-block" style="margin-top: 2vh;">builder.Configuration.AddAzureAppConfiguration(options =>
+{
+    options.Connect(<span class="code-string">"connection-string"</span>)
+           .ConfigureRefresh(refresh =>
+           {
+               refresh.Register(<span class="code-string">"Settings:MaxRetries"</span>);
+           });
+});</div>
+            <p class="reference">📘 <a href="https://docs.microsoft.com/azure/azure-app-configuration/" target="_blank">Azure App Configuration</a></p>
+    
+        </div>
+    </div>
+
+    <!-- Slide 44 -->
+    <div class="slide">
+        <div class="content">
+            <h2>Configuration: Multi-tenant scenarios</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers multi-tenant scenarios as part of configuration best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers centralized configuration in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper configuration.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of multi-tenant scenarios</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of configuration practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 44: Multi-Tenant Config Example -->
+    <!-- Slide 45 -->
     <div class="slide">
         <div class="content">
-            <h2>Multi-Tenant Config Example</h2>
-            <h3>Content Overview</h3>
-            <p>Tenant-specific settings</p>
+            <h2>Configuration: Validation at startup</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers validation at startup as part of configuration best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers multi-tenant config example in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper configuration.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of validation at startup</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of configuration practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 45: Configuration Validation -->
+    <!-- Slide 46 -->
     <div class="slide">
         <div class="content">
-            <h2>Configuration Validation</h2>
-            <h3>Content Overview</h3>
-            <p>Data annotations validation</p>
+            <h2>Configuration: Error handling</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers error handling as part of configuration best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers configuration validation in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper configuration.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of error handling</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of configuration practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 46: Config Error Handling -->
+    <!-- Slide 47 -->
     <div class="slide">
         <div class="content">
-            <h2>Config Error Handling</h2>
-            <h3>Content Overview</h3>
-            <p>Graceful startup failures</p>
+            <h2>Configuration: Section summary</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers section summary as part of configuration best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers config error handling in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper configuration.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of section summary</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of configuration practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 47: Section Summary – Configuration -->
+    <!-- Slide 48 -->
     <div class="slide">
         <div class="content">
-            <h2>Section Summary – Configuration</h2>
-            <h3>Content Overview</h3>
-            <p>Key takeaways recap</p>
+            <h2>Error Handling: Exceptions</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers exceptions as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers section summary – configuration in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of exceptions</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 48: Section 3 – Error Handling -->
+    <!-- Slide 49 -->
     <div class="slide">
         <div class="content">
-            <h2>Section 3 – Error Handling</h2>
-            <h3>Content Overview</h3>
-            <p>Introduction to error handling</p>
+            <h2>Error Handling: Global handlers</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers global handlers as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers section 3 – error handling in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of global handlers</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 49: Purpose of Error Handling -->
+    <!-- Slide 50 -->
     <div class="slide">
         <div class="content">
-            <h2>Purpose of Error Handling</h2>
-            <h3>Content Overview</h3>
-            <p>Prevent, recover, communicate</p>
+            <h2>Error Handling: Retry patterns</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers retry patterns as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers purpose of error handling in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of retry patterns</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 50: Exception Hierarchy -->
+    <!-- Slide 51 -->
     <div class="slide">
         <div class="content">
-            <h2>Exception Hierarchy</h2>
-            <h3>Content Overview</h3>
-            <p>System.Exception and built-in types</p>
+            <h2>Error Handling: Logging errors</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers logging errors as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers exception hierarchy in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of logging errors</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 51: Example: Custom Exception -->
+    <!-- Slide 52 -->
     <div class="slide">
         <div class="content">
-            <h2>Example: Custom Exception</h2>
-            <h3>Content Overview</h3>
-            <p>Creating domain exceptions</p>
+            <h2>Error Handling: Exceptions</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers exceptions as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers example: custom exception in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of exceptions</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 52: Catch vs Throw -->
+    <!-- Slide 53 -->
     <div class="slide">
         <div class="content">
-            <h2>Catch vs Throw</h2>
-            <h3>Content Overview</h3>
-            <p>When to rethrow exceptions</p>
+            <h2>Error Handling: Global handlers</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers global handlers as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers catch vs throw in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of global handlers</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 53: Avoid Swallowing Exceptions -->
+    <!-- Slide 54 -->
     <div class="slide">
         <div class="content">
-            <h2>Avoid Swallowing Exceptions</h2>
-            <h3>Content Overview</h3>
-            <p>Empty catch block anti-pattern</p>
+            <h2>Error Handling: Retry patterns</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers retry patterns as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers avoid swallowing exceptions in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of retry patterns</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 54: Global Error Handling in ASP.NET Core -->
+    <!-- Slide 55 -->
     <div class="slide">
         <div class="content">
-            <h2>Global Error Handling in ASP.NET Core</h2>
-            <h3>Content Overview</h3>
-            <p>UseExceptionHandler middleware</p>
+            <h2>Error Handling: Logging errors</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers logging errors as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers global error handling in asp.net core in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of logging errors</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 55: Example: Global Error Handler -->
+    <!-- Slide 56 -->
     <div class="slide">
         <div class="content">
-            <h2>Example: Global Error Handler</h2>
-            <h3>Content Overview</h3>
-            <p>Centralized exception handling</p>
+            <h2>Error Handling: Exceptions</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers exceptions as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers example: global error handler in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of exceptions</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 56: Layered Exception Handling -->
+    <!-- Slide 57 -->
     <div class="slide">
         <div class="content">
-            <h2>Layered Exception Handling</h2>
-            <h3>Content Overview</h3>
-            <p>UI, domain, infrastructure layers</p>
+            <h2>Error Handling: Global handlers</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers global handlers as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers layered exception handling in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of global handlers</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 57: Using Result Wrappers -->
+    <!-- Slide 58 -->
     <div class="slide">
         <div class="content">
-            <h2>Using Result Wrappers</h2>
-            <h3>Content Overview</h3>
-            <p>OneOf, FluentResults patterns</p>
+            <h2>Error Handling: Retry patterns</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers retry patterns as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers using result wrappers in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of retry patterns</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 58: Retry Patterns -->
+    <!-- Slide 59 -->
     <div class="slide">
         <div class="content">
-            <h2>Retry Patterns</h2>
-            <h3>Content Overview</h3>
-            <p>Transient fault handling</p>
+            <h2>Error Handling: Logging errors</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers logging errors as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers retry patterns in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of logging errors</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 59: Example: Retry Policy with Polly -->
+    <!-- Slide 60 -->
     <div class="slide">
         <div class="content">
-            <h2>Example: Retry Policy with Polly</h2>
-            <h3>Content Overview</h3>
-            <p>Retry configuration code</p>
+            <h2>Error Handling: Exceptions</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers exceptions as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers example: retry policy with polly in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of exceptions</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 60: Logging in Error Handlers -->
+    <!-- Slide 61 -->
     <div class="slide">
         <div class="content">
-            <h2>Logging in Error Handlers</h2>
-            <h3>Content Overview</h3>
-            <p>Always log exceptions</p>
+            <h2>Error Handling: Global handlers</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers global handlers as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers logging in error handlers in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of global handlers</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 61: Exception Filters -->
+    <!-- Slide 62 -->
     <div class="slide">
         <div class="content">
-            <h2>Exception Filters</h2>
-            <h3>Content Overview</h3>
-            <p>ASP.NET Core filters</p>
+            <h2>Error Handling: Retry patterns</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers retry patterns as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers exception filters in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of retry patterns</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 62: Graceful Degradation -->
+    <!-- Slide 63 -->
     <div class="slide">
         <div class="content">
-            <h2>Graceful Degradation</h2>
-            <h3>Content Overview</h3>
-            <p>Fallback strategies</p>
+            <h2>Error Handling: Logging errors</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers logging errors as part of error handling best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers graceful degradation in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper error handling.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of logging errors</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of error handling practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 63: Section Summary – Error Handling -->
+    <!-- Slide 64 -->
     <div class="slide">
         <div class="content">
-            <h2>Section Summary – Error Handling</h2>
-            <h3>Content Overview</h3>
-            <p>Error handling recap</p>
+            <h2>Documentation: XML comments</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers xml comments as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers section summary – error handling in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of xml comments</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 64: Section 4 – Documentation -->
+    <!-- Slide 65 -->
     <div class="slide">
         <div class="content">
-            <h2>Section 4 – Documentation</h2>
-            <h3>Content Overview</h3>
-            <p>Introduction to documentation</p>
+            <h2>Documentation: README</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers readme as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers section 4 – documentation in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of readme</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 65: Why Documentation Matters -->
+    <!-- Slide 66 -->
     <div class="slide">
         <div class="content">
-            <h2>Why Documentation Matters</h2>
-            <h3>Content Overview</h3>
-            <p>Productivity multiplier</p>
+            <h2>Documentation: API docs</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers api docs as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers why documentation matters in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of api docs</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 66: Documentation Layers -->
+    <!-- Slide 67 -->
     <div class="slide">
         <div class="content">
-            <h2>Documentation Layers</h2>
-            <h3>Content Overview</h3>
-            <p>Architecture, API, onboarding</p>
+            <h2>Documentation: Maintenance</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers maintenance as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers documentation layers in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of maintenance</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 67: Internal vs External Docs -->
+    <!-- Slide 68 -->
     <div class="slide">
         <div class="content">
-            <h2>Internal vs External Docs</h2>
-            <h3>Content Overview</h3>
-            <p>Audience-specific documentation</p>
+            <h2>Documentation: XML comments</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers xml comments as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers internal vs external docs in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of xml comments</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 68: Documentation as Code -->
+    <!-- Slide 69 -->
     <div class="slide">
         <div class="content">
-            <h2>Documentation as Code</h2>
-            <h3>Content Overview</h3>
-            <p>Version control for docs</p>
+            <h2>Documentation: README</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers readme as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers documentation as code in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of readme</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 69: Example: XML Comments -->
+    <!-- Slide 70 -->
     <div class="slide">
         <div class="content">
-            <h2>Example: XML Comments</h2>
-            <h3>Content Overview</h3>
-            <p>IntelliSense documentation</p>
+            <h2>Documentation: API docs</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers api docs as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers example: xml comments in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of api docs</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 70: Example: README.md -->
+    <!-- Slide 71 -->
     <div class="slide">
         <div class="content">
-            <h2>Example: README.md</h2>
-            <h3>Content Overview</h3>
-            <p>Project overview template</p>
+            <h2>Documentation: Maintenance</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers maintenance as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers example: readme.md in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of maintenance</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 71: Style Guidelines -->
+    <!-- Slide 72 -->
     <div class="slide">
         <div class="content">
-            <h2>Style Guidelines</h2>
-            <h3>Content Overview</h3>
-            <p>Concise, consistent, examples</p>
+            <h2>Documentation: XML comments</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers xml comments as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers style guidelines in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of xml comments</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 72: Diagrams and Visuals -->
+    <!-- Slide 73 -->
     <div class="slide">
         <div class="content">
-            <h2>Diagrams and Visuals</h2>
-            <h3>Content Overview</h3>
-            <p>PlantUML, Mermaid</p>
+            <h2>Documentation: README</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers readme as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers diagrams and visuals in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of readme</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 73: Doc Generation Tools -->
+    <!-- Slide 74 -->
     <div class="slide">
         <div class="content">
-            <h2>Doc Generation Tools</h2>
-            <h3>Content Overview</h3>
-            <p>DocFX, Swashbuckle, MkDocs</p>
+            <h2>Documentation: API docs</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers api docs as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers doc generation tools in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of api docs</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 74: CI/CD Integration -->
+    <!-- Slide 75 -->
     <div class="slide">
         <div class="content">
-            <h2>CI/CD Integration</h2>
-            <h3>Content Overview</h3>
-            <p>Automated doc publishing</p>
+            <h2>Documentation: Maintenance</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers maintenance as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers ci/cd integration in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of maintenance</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 75: Review Process -->
+    <!-- Slide 76 -->
     <div class="slide">
         <div class="content">
-            <h2>Review Process</h2>
-            <h3>Content Overview</h3>
-            <p>Docs in pull requests</p>
+            <h2>Documentation: XML comments</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers xml comments as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers review process in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of xml comments</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 76: Maintaining Docs -->
+    <!-- Slide 77 -->
     <div class="slide">
         <div class="content">
-            <h2>Maintaining Docs</h2>
-            <h3>Content Overview</h3>
-            <p>Ownership and updates</p>
+            <h2>Documentation: README</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers readme as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers maintaining docs in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of readme</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 77: README Example -->
+    <!-- Slide 78 -->
     <div class="slide">
         <div class="content">
-            <h2>README Example</h2>
-            <h3>Content Overview</h3>
-            <p>Comprehensive README structure</p>
+            <h2>Documentation: API docs</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers api docs as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers readme example in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of api docs</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 78: Onboarding Guides -->
+    <!-- Slide 79 -->
     <div class="slide">
         <div class="content">
-            <h2>Onboarding Guides</h2>
-            <h3>Content Overview</h3>
-            <p>New developer setup</p>
+            <h2>Documentation: Maintenance</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers maintenance as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers onboarding guides in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of maintenance</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 79: Changelog Best Practice -->
+    <!-- Slide 80 -->
     <div class="slide">
         <div class="content">
-            <h2>Changelog Best Practice</h2>
-            <h3>Content Overview</h3>
-            <p>Keep a Changelog format</p>
+            <h2>Documentation: XML comments</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers xml comments as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers changelog best practice in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of xml comments</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 80: ADRs (Architecture Decision Records) -->
+    <!-- Slide 81 -->
     <div class="slide">
         <div class="content">
-            <h2>ADRs (Architecture Decision Records)</h2>
-            <h3>Content Overview</h3>
-            <p>Document design choices</p>
+            <h2>Documentation: README</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers readme as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers adrs (architecture decision records) in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of readme</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 81: Example ADR Entry -->
+    <!-- Slide 82 -->
     <div class="slide">
         <div class="content">
-            <h2>Example ADR Entry</h2>
-            <h3>Content Overview</h3>
-            <p>ADR template and example</p>
+            <h2>Documentation: API docs</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers api docs as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers example adr entry in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of api docs</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 82: Linking Docs and Code -->
+    <!-- Slide 83 -->
     <div class="slide">
         <div class="content">
-            <h2>Linking Docs and Code</h2>
-            <h3>Content Overview</h3>
-            <p>Cross-references</p>
+            <h2>Documentation: Maintenance</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers maintenance as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers linking docs and code in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of maintenance</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 83: Documentation Ownership -->
+    <!-- Slide 84 -->
     <div class="slide">
         <div class="content">
-            <h2>Documentation Ownership</h2>
-            <h3>Content Overview</h3>
-            <p>Module owners</p>
+            <h2>Documentation: XML comments</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers xml comments as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers documentation ownership in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of xml comments</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 84: Using GitHub Pages or Confluence -->
+    <!-- Slide 85 -->
     <div class="slide">
         <div class="content">
-            <h2>Using GitHub Pages or Confluence</h2>
-            <h3>Content Overview</h3>
-            <p>Doc hosting</p>
+            <h2>Documentation: README</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers readme as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers using github pages or confluence in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of readme</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 85: Avoid Outdated Docs -->
+    <!-- Slide 86 -->
     <div class="slide">
         <div class="content">
-            <h2>Avoid Outdated Docs</h2>
-            <h3>Content Overview</h3>
-            <p>Living documentation</p>
+            <h2>Documentation: API docs</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers api docs as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers avoid outdated docs in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of api docs</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 86: Review Frequency -->
+    <!-- Slide 87 -->
     <div class="slide">
         <div class="content">
-            <h2>Review Frequency</h2>
-            <h3>Content Overview</h3>
-            <p>Quarterly reviews</p>
+            <h2>Documentation: Maintenance</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers maintenance as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers review frequency in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of maintenance</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 87: Toolchain Example -->
+    <!-- Slide 88 -->
     <div class="slide">
         <div class="content">
-            <h2>Toolchain Example</h2>
-            <h3>Content Overview</h3>
-            <p>DocFX + GitHub Actions</p>
+            <h2>Documentation: XML comments</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers xml comments as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers toolchain example in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of xml comments</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 88: Measuring Doc Health -->
+    <!-- Slide 89 -->
     <div class="slide">
         <div class="content">
-            <h2>Measuring Doc Health</h2>
-            <h3>Content Overview</h3>
-            <p>Coverage metrics</p>
+            <h2>Documentation: README</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers readme as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers measuring doc health in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of readme</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 89: Documentation Anti-Patterns -->
+    <!-- Slide 90 -->
     <div class="slide">
         <div class="content">
-            <h2>Documentation Anti-Patterns</h2>
-            <h3>Content Overview</h3>
-            <p>Common mistakes</p>
+            <h2>Documentation: API docs</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers api docs as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers documentation anti-patterns in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of api docs</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 90: Localization -->
+    <!-- Slide 91 -->
     <div class="slide">
         <div class="content">
-            <h2>Localization</h2>
-            <h3>Content Overview</h3>
-            <p>Multi-language support</p>
+            <h2>Documentation: Maintenance</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers maintenance as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers localization in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of maintenance</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 91: Accessibility -->
+    <!-- Slide 92 -->
     <div class="slide">
         <div class="content">
-            <h2>Accessibility</h2>
-            <h3>Content Overview</h3>
-            <p>Readable, inclusive docs</p>
+            <h2>Documentation: XML comments</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers xml comments as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers accessibility in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of xml comments</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 92: Documentation for APIs -->
+    <!-- Slide 93 -->
     <div class="slide">
         <div class="content">
-            <h2>Documentation for APIs</h2>
-            <h3>Content Overview</h3>
-            <p>Swagger/OpenAPI</p>
+            <h2>Documentation: README</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers readme as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers documentation for apis in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of readme</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 93: Example Swagger Setup -->
+    <!-- Slide 94 -->
     <div class="slide">
         <div class="content">
-            <h2>Example Swagger Setup</h2>
-            <h3>Content Overview</h3>
-            <p>ASP.NET Core Swagger</p>
+            <h2>Documentation: API docs</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers api docs as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers example swagger setup in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of api docs</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 94: External Docs Integration -->
+    <!-- Slide 95 -->
     <div class="slide">
         <div class="content">
-            <h2>External Docs Integration</h2>
-            <h3>Content Overview</h3>
-            <p>API versioning</p>
+            <h2>Documentation: Maintenance</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers maintenance as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers external docs integration in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of maintenance</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 95: Automation Example -->
+    <!-- Slide 96 -->
     <div class="slide">
         <div class="content">
-            <h2>Automation Example</h2>
-            <h3>Content Overview</h3>
-            <p>CI regenerating docs</p>
+            <h2>Documentation: XML comments</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers xml comments as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers automation example in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of xml comments</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 96: Writing Style -->
+    <!-- Slide 97 -->
     <div class="slide">
         <div class="content">
-            <h2>Writing Style</h2>
-            <h3>Content Overview</h3>
-            <p>Examples over theory</p>
+            <h2>Documentation: README</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers readme as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers writing style in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of readme</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 97: Knowledge Sharing -->
+    <!-- Slide 98 -->
     <div class="slide">
         <div class="content">
-            <h2>Knowledge Sharing</h2>
-            <h3>Content Overview</h3>
-            <p>Team presentations</p>
+            <h2>Documentation: API docs</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers api docs as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers knowledge sharing in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
+            </div>
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of api docs</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
 
-    <!-- Slide 98: Recap – 4 Best Practices Together -->
+    <!-- Slide 99 -->
     <div class="slide">
         <div class="content">
-            <h2>Recap – 4 Best Practices Together</h2>
-            <h3>Content Overview</h3>
-            <p>Final integration</p>
+            <h2>Documentation: Maintenance</h2>
+            <h3>Key Concepts</h3>
+            <p>This slide covers maintenance as part of documentation best practices.</p>
+            
             <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers recap – 4 best practices together in detail with code examples and best practices.
+                <strong>Core Principle:</strong> Professional .NET applications require proper documentation.
             </div>
-        </div>
-    </div>
-
-    <!-- Slide 99: Capstone Project Overview -->
-    <div class="slide">
-        <div class="content">
-            <h2>Capstone Project Overview</h2>
-            <h3>Content Overview</h3>
-            <p>Apply all 4 pillars</p>
-            <div class="info-box" style="margin-top: 2vh;">
-                <strong>Note:</strong> This slide covers capstone project overview in detail with code examples and best practices.
+            
+            <ul style="margin-top: 2vh;">
+                <li>Understand the importance of maintenance</li>
+                <li>Learn industry-standard patterns</li>
+                <li>Apply best practices in production</li>
+                <li>Avoid common pitfalls and anti-patterns</li>
+            </ul>
+            
+            <div class="hint" style="margin-top: 2vh;">
+                <strong>💡 Remember:</strong> Consistent application of documentation practices leads to maintainable, professional code.
             </div>
         </div>
     </div>
